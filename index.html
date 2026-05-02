@@ -342,7 +342,7 @@
             const [h1, m1] = s.split(':').map(Number);
             const [h2, m2] = e.split(':').map(Number);
             let diff = (h2 + (m2||0)/60) - (h1 + (m1||0)/60);
-            h = diff > 0 ? diff.toFixed(1) : "";
+            h = diff > 0 ? Number(diff.toFixed(1)).toString() : "";
         }
         document.getElementById(`h_${d}`).innerText = formatNumber(h);
         save(d); calc();
@@ -376,7 +376,7 @@
             s4 += parseFloat(document.getElementById(`c4_${d}`).value.replace(',', '.')) || 0;
             s5 += parseFloat(document.getElementById(`c5_${d}`).value.replace(',', '.')) || 0;
         }
-        document.getElementById('total-hours').innerText = total > 0 ? total.toFixed(1) : "";
+        document.getElementById('total-hours').innerText = total > 0 ? Number(total.toFixed(1)).toString() : "";
         document.getElementById('sum-c1').innerText = formatNumber(s1);
         document.getElementById('sum-c2').innerText = formatNumber(s2);
         document.getElementById('sum-c3').innerText = formatNumber(s3);
