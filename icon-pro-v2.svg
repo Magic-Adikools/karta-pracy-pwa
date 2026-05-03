@@ -1,0 +1,108 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1F2A38"></stop>
+      <stop offset="100%" stop-color="#0B0F14"></stop>
+    </radialGradient>
+
+    <!-- Card gradient -->
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2F3B4C"></stop>
+      <stop offset="100%" stop-color="#1C2532"></stop>
+    </linearGradient>
+
+    <!-- Light edge -->
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5A6B80" stop-opacity="0.6"></stop>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
+    </linearGradient>
+
+    <!-- Blue check -->
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6BB6FF"></stop>
+      <stop offset="100%" stop-color="#2F7BFF"></stop>
+    </linearGradient>
+
+    <!-- Shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#000" flood-opacity="0.6"></feDropShadow>
+    </filter>
+
+    <!-- Soft inner shadow -->
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="2"></feOffset>
+      <feGaussianBlur stdDeviation="4" result="offset-blur"></feGaussianBlur>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"></feComposite>
+      <feFlood flood-color="#000" flood-opacity="0.4" result="color"></feFlood>
+      <feComposite operator="in" in="color" in2="inverse" result="shadow"></feComposite>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"></feComposite>
+    </filter>
+
+  </defs>
+
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)"></rect>
+
+  <!-- Card -->
+  <g filter="url(#shadow)">
+    <rect x="96" y="96" width="260" height="320" rx="40" fill="url(#card)" filter="url(#innerShadow)"></rect>
+    
+    <!-- Edge highlight -->
+    <rect x="96" y="96" width="260" height="320" rx="40" fill="url(#edge)"></rect>
+  </g>
+
+  <!-- Fold -->
+  <path d="M356 96 L356 170 Q356 190 336 190 L276 96 Z" fill="#3A4658"></path>
+
+  <!-- Avatar -->
+  <g>
+    <circle cx="150" cy="150" r="26" fill="#4A5668"></circle>
+    <circle cx="150" cy="140" r="10" fill="#2C3645"></circle>
+    <path d="M132 162c6-12 30-12 36 0" fill="#2C3645"></path>
+  </g>
+
+  <!-- Lines -->
+  <rect x="190" y="140" width="110" height="10" rx="5" fill="#4A5668"></rect>
+  <rect x="120" y="190" width="200" height="10" rx="5" fill="#4A5668"></rect>
+
+  <!-- Checklist -->
+  <g>
+    <rect x="120" y="220" width="40" height="40" rx="10" fill="#2C3645"></rect>
+    <rect x="120" y="280" width="40" height="40" rx="10" fill="#2C3645"></rect>
+    <rect x="120" y="340" width="40" height="40" rx="10" fill="#2C3645"></rect>
+
+    <!-- Glow -->
+    <rect x="120" y="220" width="40" height="40" rx="10" fill="url(#edge)" opacity="0.4"></rect>
+    <rect x="120" y="280" width="40" height="40" rx="10" fill="url(#edge)" opacity="0.4"></rect>
+    <rect x="120" y="340" width="40" height="40" rx="10" fill="url(#edge)" opacity="0.4"></rect>
+  </g>
+
+  <!-- Check marks -->
+  <g stroke="url(#blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M130 240 L142 252 L158 230"></path>
+    <path d="M130 300 L142 312 L158 290"></path>
+    <path d="M130 360 L142 372 L158 350"></path>
+  </g>
+
+  <!-- Text -->
+  <g fill="#4A5668">
+    <rect x="180" y="230" width="130" height="8" rx="4"></rect>
+    <rect x="180" y="245" width="90" height="8" rx="4"></rect>
+
+    <rect x="180" y="290" width="130" height="8" rx="4"></rect>
+    <rect x="180" y="305" width="90" height="8" rx="4"></rect>
+
+    <rect x="180" y="350" width="130" height="8" rx="4"></rect>
+    <rect x="180" y="365" width="90" height="8" rx="4"></rect>
+  </g>
+
+  <!-- Pen -->
+  <g transform="rotate(20 380 300)" filter="url(#shadow)">
+    <rect x="360" y="180" width="44" height="200" rx="22" fill="url(#card)"></rect>
+    <rect x="360" y="180" width="44" height="200" rx="22" fill="url(#edge)" opacity="0.5"></rect>
+    <polygon points="360,380 404,380 382,420" fill="#2C3645"></polygon>
+  </g>
+
+</svg>
