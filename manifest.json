@@ -1,9 +1,9 @@
 {
   "name": "Karta Pracy Moris",
-  "short_name": "KartaPracy",
+  "short_name": "Karta Pracy",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#1a1a1a",
+  "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
