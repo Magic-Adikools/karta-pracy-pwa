@@ -3,14 +3,14 @@
   "short_name": "Karta Pracy",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#1F2A38",
+  "theme_color": "#1F2A38",
   "icons": [
     {
       "src": "icon-pro-v2.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
