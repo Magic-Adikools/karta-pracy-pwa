@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Karta Pracy">
+    <link rel="apple-touch-icon" href="icon-pro-v2.png">
     <title>Karta Pracy, Wniosek i Oświadczenie</title>
     <style>
         :root {
@@ -1728,7 +1735,18 @@ function printClean() {
 
     // 5. Zapisz dokument w nowym oknie i wywołaj druk
     win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + pageClone.outerHTML + '</body></html>');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + pageClone.outerHTML + '<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function() {
+            navigator.serviceWorker.register("sw.js").then(function(reg) {
+                console.log("Service Worker zarejestrowany:", reg.scope);
+            }).catch(function(err) {
+                console.log("Błąd rejestracji SW:", err);
+            });
+        });
+    }
+</script>
+</body></html>');
     win.document.close();
 
     win.onload = function() {
@@ -1737,6 +1755,17 @@ function printClean() {
         setTimeout(function() { win.close(); }, 1000);
     };
 }
+</script>
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function() {
+            navigator.serviceWorker.register("sw.js").then(function(reg) {
+                console.log("Service Worker zarejestrowany:", reg.scope);
+            }).catch(function(err) {
+                console.log("Błąd rejestracji SW:", err);
+            });
+        });
+    }
 </script>
 </body>
 </html>
