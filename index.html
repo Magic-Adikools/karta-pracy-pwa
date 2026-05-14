@@ -1735,18 +1735,7 @@ function printClean() {
 
     // 5. Zapisz dokument w nowym oknie i wywołaj druk
     win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + pageClone.outerHTML + '<script>
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function() {
-            navigator.serviceWorker.register("sw.js").then(function(reg) {
-                console.log("Service Worker zarejestrowany:", reg.scope);
-            }).catch(function(err) {
-                console.log("Błąd rejestracji SW:", err);
-            });
-        });
-    }
-</script>
-</body></html>');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + pageClone.outerHTML + '</body></html>');
     win.document.close();
 
     win.onload = function() {
@@ -1757,7 +1746,7 @@ function printClean() {
 }
 </script>
 <script>
-    if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
         window.addEventListener("load", function() {
             navigator.serviceWorker.register("sw.js").then(function(reg) {
                 console.log("Service Worker zarejestrowany:", reg.scope);
