@@ -275,10 +275,10 @@
     </style>
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
             from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs }
+        import { getFirestore, doc, setDoc, deleteDoc, collection, getDocs }
             from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -290,140 +290,150 @@
             appId: "1:327809747548:web:b2d38ff50c93480dc3b499"
         };
 
-        const app  = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db   = getFirestore(app);
+        const app      = initializeApp(firebaseConfig);
+        const auth     = getAuth(app);
+        const db       = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // ── FIRESTORE: zastąpienie localStorage dla danych użytkownika ────────
-        // Klucze ustawień lokalnych (motyw, PIN, kolor paska) zostają w localStorage.
-        // Dane robocze (karty pracy, imię, nagłówki edycji, święta) idą do Firestore.
+        // ── Klucze tylko lokalne (ustawienia urządzenia) ─────────────────────
+        const LOCAL_ONLY = ['app_theme','app_pin','pin_disabled','nav_color','vac_count'];
+        const isLocal = k => LOCAL_ONLY.includes(k);
 
-        const DATA_KEYS_LOCAL = ['app_theme', 'app_pin', 'pin_disabled', 'nav_color', 'vac_count'];
-
-        function isLocalKey(key) {
-            return DATA_KEYS_LOCAL.includes(key);
+        // ── Enkodowanie klucza na bezpieczny ID dokumentu Firestore ──────────
+        // Zamiast zamieniać znaki (co gubi informację), kodujemy Base64url
+        function encodeKey(k) {
+            return btoa(unescape(encodeURIComponent(k)))
+                .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+        }
+        function decodeKey(s) {
+            let b = s.replace(/-/g,'+').replace(/_/g,'/');
+            while (b.length % 4) b += '=';
+            return decodeURIComponent(escape(atob(b)));
         }
 
-        function userDoc(uid, key) {
-            // Firestore nie lubi znaków specjalnych w ID dokumentu — enkodujemy klucz
-            const safeKey = key.replace(/[^a-zA-Z0-9_\-]/g, '_');
-            return doc(db, 'users', uid, 'data', safeKey);
+        function userDocRef(uid, key) {
+            return doc(db, 'users', uid, 'data', encodeKey(key));
         }
 
-        // Nadpisz localStorage.setItem / getItem / removeItem / clear dla kluczy danych
-        const _origSet    = localStorage.setItem.bind(localStorage);
-        const _origGet    = localStorage.getItem.bind(localStorage);
-        const _origRem    = localStorage.removeItem.bind(localStorage);
-        const _origClear  = localStorage.clear.bind(localStorage);
-        const _origLength = Object.getOwnPropertyDescriptor(Storage.prototype, 'length');
-        const _origKey    = localStorage.key.bind(localStorage);
+        // ── Oryginalne metody localStorage ───────────────────────────────────
+        const _lsSet  = localStorage.setItem.bind(localStorage);
+        const _lsRem  = localStorage.removeItem.bind(localStorage);
+        const _lsKey  = localStorage.key.bind(localStorage);
 
-        // Pomocnicze: zapisz do Firestore (async, ogień i zapomnij)
-        async function fsSet(key, value) {
-            const uid = window._googleUser && window._googleUser.uid;
-            if (!uid) return;
-            try { await setDoc(userDoc(uid, key), { value }); } catch(e) { console.warn('fsSet', e); }
+        // ── Zapis do Firestore (fire & forget) ────────────────────────────────
+        function fsWrite(key, value) {
+            const uid = window._fbUser && window._fbUser.uid;
+            if (!uid || isLocal(key)) return;
+            setDoc(userDocRef(uid, key), { k: key, v: value })
+                .catch(e => console.warn('[FS write]', key, e));
         }
-        async function fsRemove(key) {
-            const uid = window._googleUser && window._googleUser.uid;
-            if (!uid) return;
-            try { await deleteDoc(userDoc(uid, key)); } catch(e) { console.warn('fsRemove', e); }
+        function fsDelete(key) {
+            const uid = window._fbUser && window._fbUser.uid;
+            if (!uid || isLocal(key)) return;
+            deleteDoc(userDocRef(uid, key))
+                .catch(e => console.warn('[FS delete]', key, e));
         }
 
-        // Patch localStorage
+        // ── Patch localStorage — każdy zapis idzie też do Firestore ──────────
         localStorage.setItem = function(key, value) {
-            _origSet(key, value);          // zawsze też lokalnie (cache)
-            if (!isLocalKey(key) && window._googleUser) fsSet(key, value);
+            _lsSet(key, value);
+            fsWrite(key, value);
         };
         localStorage.removeItem = function(key) {
-            _origRem(key);
-            if (!isLocalKey(key) && window._googleUser) fsRemove(key);
+            _lsRem(key);
+            fsDelete(key);
         };
         localStorage.clear = function() {
-            // Wyczyść tylko klucze danych (nie ustawień)
-            const toDelete = [];
+            // Usuń tylko dane (nie ustawienia urządzenia)
+            const keys = [];
             for (let i = 0; i < localStorage.length; i++) {
-                const k = _origKey(i);
-                if (!isLocalKey(k)) toDelete.push(k);
+                const k = _lsKey(i);
+                if (!isLocal(k)) keys.push(k);
             }
-            toDelete.forEach(k => { _origRem(k); if (window._googleUser) fsRemove(k); });
+            keys.forEach(k => { _lsRem(k); fsDelete(k); });
         };
 
-        // Wczytaj wszystkie dane z Firestore do localStorage (po zalogowaniu)
-        async function loadFromFirestore(uid) {
+        // ── Wczytaj wszystkie dane z Firestore → localStorage ─────────────────
+        async function syncFromCloud(uid) {
             try {
-                const col = collection(db, 'users', uid, 'data');
-                const snap = await getDocs(col);
+                const snap = await getDocs(collection(db, 'users', uid, 'data'));
                 snap.forEach(d => {
-                    const key = d.id.replace(/_/g, function(m, offset, s) {
-                        // Przywróć oryginalne klucze — zostawiamy jak jest,
-                        // bo enkodowanie było tylko dla niedozwolonych znaków.
-                        return m;
-                    });
-                    // Zapisz do cache lokalnego (bez triggerowania fsSet)
-                    _origSet(d.id === key ? key : d.id, d.data().value);
-                    // Spróbuj też z oryginalną nazwą klucza (prefix_rok_miesiąc)
-                    _origSet(key, d.data().value);
+                    const data = d.data();
+                    // Preferuj pole k (oryginalna nazwa klucza) jeśli istnieje
+                    const key = data.k || decodeKey(d.id);
+                    const val = data.v !== undefined ? data.v : data.value;
+                    if (key && val !== undefined) _lsSet(key, val);
                 });
-            } catch(e) { console.warn('loadFromFirestore', e); }
+                console.log('[FS] Wczytano', snap.size, 'rekordów z chmury');
+                // Jesli aplikacja juz widoczna (np. powrot na karte) — odswiez dane
+                if (document.getElementById('main-app').style.display !== 'none') {
+                    if (typeof render === 'function') render();
+                    if (typeof loadEdycjaHeaders === 'function') loadEdycjaHeaders();
+                }
+            } catch(e) {
+                console.warn('[FS] Błąd odczytu:', e);
+            }
         }
 
-        // ── LOGOWANIE GOOGLE ───────────────────────────────────────────────────
-        window.googleLogin = async function() {
-            const btn = document.getElementById('google-login-btn');
-            if (btn) { btn.disabled = true; btn.textContent = '⏳ Logowanie...'; }
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                window._googleUser = user;
-                await loadFromFirestore(user.uid);
-                _afterGoogleAuth(user);
-            } catch (e) {
-                alert('Błąd logowania Google: ' + e.message);
-                if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0;"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Zaloguj przez Google'; }
-            }
-        };
+        // ── Po udanym Google Auth ─────────────────────────────────────────────
+        async function afterAuth(user) {
+            window._fbUser = user;
 
-        // Po pomyślnym uwierzytelnieniu Google — sprawdź czy PIN wymagany
-        function _afterGoogleAuth(user) {
+            // Wczytaj dane z chmury (nadpisz lokalny cache)
+            await syncFromCloud(user.uid);
+
+            // Odśwież info o użytkowniku
             const info = document.getElementById('google-user-info');
-            if (info) info.textContent = '👤 ' + user.displayName;
+            if (info) info.textContent = '\u{1F464} ' + user.displayName;
 
-            const pinDisabled = localStorage.getItem('pin_disabled') === 'true';
-            if (pinDisabled) {
-                // PIN wyłączony → od razu wybór roli
+            // Sprawdź czy PIN jest wymagany
+            const pinOff = localStorage.getItem('pin_disabled') === 'true';
+            if (pinOff) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('role-selection').style.display = 'flex';
             } else {
-                // PIN włączony → pokaż tylko klawiaturę PIN (ukryj przycisk Google)
-                document.getElementById('google-login-btn').style.display = 'none';
+                // Ukryj przycisk Google, czekaj na PIN
+                const btn = document.getElementById('google-login-btn');
+                if (btn) btn.style.display = 'none';
                 const hint = document.querySelector('.pin-default-hint');
                 if (hint) hint.style.display = 'none';
-                // Ustaw flagę: Google już OK, czekamy na PIN
                 window._googleAuthDone = true;
-                // Ekran PIN już widoczny — nic więcej
+                // Ekran PIN pozostaje widoczny
             }
         }
 
-        // ── WYLOGOWANIE ────────────────────────────────────────────────────────
-        window.googleLogout = async function() {
+        // ── Logowanie przez Google ────────────────────────────────────────────
+        window.googleLogin = async function() {
+            const btn = document.getElementById('google-login-btn');
+            if (btn) { btn.disabled = true; btn.textContent = '\u23F3 Logowanie...'; }
             try {
-                await signOut(auth);
-                window._googleUser = null;
-                window._googleAuthDone = false;
-                location.reload();
+                const result = await signInWithPopup(auth, provider);
+                await afterAuth(result.user);
             } catch(e) {
-                alert('Błąd wylogowania: ' + e.message);
+                alert('B\u0142\u0105d logowania Google: ' + e.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Zaloguj przez Google';
+                }
             }
         };
 
-        // ── SESJA ZAPAMIĘTANA ──────────────────────────────────────────────────
+        // ── Wylogowanie ───────────────────────────────────────────────────────
+        window.googleLogout = async function() {
+            try {
+                await signOut(auth);
+                window._fbUser = null;
+                window._googleUser = null;
+                window._googleAuthDone = false;
+                location.reload();
+            } catch(e) { alert('B\u0142\u0105d wylogowania: ' + e.message); }
+        };
+
+        // ── Sesja zapamiętana (powrót na stronę) ─────────────────────────────
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                window._googleUser = user;
-                await loadFromFirestore(user.uid);
-                _afterGoogleAuth(user);
+                window._googleUser = user; // kompatybilność wsteczna
+                await afterAuth(user);
             }
         });
     </script>
@@ -548,7 +558,7 @@
         <div class="role-tile" onclick="selectRole('Edycja')" style="background:#fff3cd;color:#856404;">Dostosuj</div>
     </div>
     <div style="margin-top:18px;margin-bottom:20px;">
-        <button onclick="if(window._googleUser){googleLogout();}else{document.getElementById('role-selection').style.display='none';document.getElementById('login-screen').style.display='flex';}"
+        <button onclick="if(window._fbUser){googleLogout();}else{document.getElementById('role-selection').style.display='none';document.getElementById('login-screen').style.display='flex';}"
             style="padding:10px 28px;border:none;border-radius:8px;background:#6c757d;color:white;font-size:14px;font-weight:bold;cursor:pointer;">
             🔒 Wyloguj
         </button>
@@ -1290,26 +1300,24 @@ function getHolidays() {
 window.onload = () => checkInitialPinState();
 
 function checkInitialPinState() {
-    // Zastosuj zapisany motyw natychmiast przy starcie — przed jakimkolwiek ekranem
+    // Zastosuj zapisany motyw natychmiast przy starcie
     setTheme(localStorage.getItem('app_theme') || 'default');
-
-    // Ekran logowania zawsze pokazujemy na starcie.
-    // Firebase onAuthStateChanged (async) sam zdecyduje co dalej po weryfikacji sesji Google.
-    const dis = localStorage.getItem('pin_disabled') === 'true';
+    // Ekran logowania PIN zawsze widoczny na starcie.
+    // Firebase onAuthStateChanged (async) sam zdecyduje co pokazac po sprawdzeniu sesji.
     document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('pin-toggle').checked = !dis;
+    document.getElementById('pin-toggle').checked = localStorage.getItem('pin_disabled') !== 'true';
     _pinBuffer = ""; _updateDots();
 
-    // Jesli PIN wylaczony i nie czekamy na Google — pokaz role po krotkim opoznieniu
-    // (Firebase nadpisze to jesli znajdzie sesje Google)
-    if (dis) {
-        setTimeout(() => {
-            if (!window._googleUser) {
+    // Jesli brak sesji Google po 1.5s i PIN jest wylaczony — pokaz wybor roli
+    setTimeout(() => {
+        if (!window._fbUser) {
+            const dis = localStorage.getItem('pin_disabled') === 'true';
+            if (dis) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('role-selection').style.display = 'flex';
             }
-        }, 900);
-    }
+        }
+    }, 1500);
 }
 function togglePinSetting() {
     localStorage.setItem('pin_disabled', !document.getElementById('pin-toggle').checked);
@@ -1379,9 +1387,9 @@ function pinPress(digit) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('role-selection').style.display = 'flex';
                 // Jesli Google juz zautoryzowany — pokazujemy info o uzytkowniku
-                if (window._googleUser) {
+                if (window._fbUser) {
                     const info = document.getElementById('google-user-info');
-                    if (info) info.textContent = '\u{1F464} ' + window._googleUser.displayName;
+                    if (info) info.textContent = '\u{1F464} ' + window._fbUser.displayName;
                 }
             } else {
                 // Shake effect on dots
@@ -1416,9 +1424,9 @@ function checkPin() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('role-selection').style.display = 'flex';
         _pinBuffer = ""; _updateDots();
-        if (window._googleUser) {
+        if (window._fbUser) {
             const info = document.getElementById('google-user-info');
-            if (info) info.textContent = '\u{1F464} ' + window._googleUser.displayName;
+            if (info) info.textContent = '\u{1F464} ' + window._fbUser.displayName;
         }
     } else {
         alert("Niepoprawny PIN");
