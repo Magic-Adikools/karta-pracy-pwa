@@ -275,9 +275,11 @@
     </style>
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
             from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs }
+            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCg0ahNW8GfdfB5HnqcADCrEGPEtd-oErs",
@@ -288,11 +290,86 @@
             appId: "1:327809747548:web:b2d38ff50c93480dc3b499"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db   = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // Globalna funkcja logowania przez Google
+        // ── FIRESTORE: zastąpienie localStorage dla danych użytkownika ────────
+        // Klucze ustawień lokalnych (motyw, PIN, kolor paska) zostają w localStorage.
+        // Dane robocze (karty pracy, imię, nagłówki edycji, święta) idą do Firestore.
+
+        const DATA_KEYS_LOCAL = ['app_theme', 'app_pin', 'pin_disabled', 'nav_color', 'vac_count'];
+
+        function isLocalKey(key) {
+            return DATA_KEYS_LOCAL.includes(key);
+        }
+
+        function userDoc(uid, key) {
+            // Firestore nie lubi znaków specjalnych w ID dokumentu — enkodujemy klucz
+            const safeKey = key.replace(/[^a-zA-Z0-9_\-]/g, '_');
+            return doc(db, 'users', uid, 'data', safeKey);
+        }
+
+        // Nadpisz localStorage.setItem / getItem / removeItem / clear dla kluczy danych
+        const _origSet    = localStorage.setItem.bind(localStorage);
+        const _origGet    = localStorage.getItem.bind(localStorage);
+        const _origRem    = localStorage.removeItem.bind(localStorage);
+        const _origClear  = localStorage.clear.bind(localStorage);
+        const _origLength = Object.getOwnPropertyDescriptor(Storage.prototype, 'length');
+        const _origKey    = localStorage.key.bind(localStorage);
+
+        // Pomocnicze: zapisz do Firestore (async, ogień i zapomnij)
+        async function fsSet(key, value) {
+            const uid = window._googleUser && window._googleUser.uid;
+            if (!uid) return;
+            try { await setDoc(userDoc(uid, key), { value }); } catch(e) { console.warn('fsSet', e); }
+        }
+        async function fsRemove(key) {
+            const uid = window._googleUser && window._googleUser.uid;
+            if (!uid) return;
+            try { await deleteDoc(userDoc(uid, key)); } catch(e) { console.warn('fsRemove', e); }
+        }
+
+        // Patch localStorage
+        localStorage.setItem = function(key, value) {
+            _origSet(key, value);          // zawsze też lokalnie (cache)
+            if (!isLocalKey(key) && window._googleUser) fsSet(key, value);
+        };
+        localStorage.removeItem = function(key) {
+            _origRem(key);
+            if (!isLocalKey(key) && window._googleUser) fsRemove(key);
+        };
+        localStorage.clear = function() {
+            // Wyczyść tylko klucze danych (nie ustawień)
+            const toDelete = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = _origKey(i);
+                if (!isLocalKey(k)) toDelete.push(k);
+            }
+            toDelete.forEach(k => { _origRem(k); if (window._googleUser) fsRemove(k); });
+        };
+
+        // Wczytaj wszystkie dane z Firestore do localStorage (po zalogowaniu)
+        async function loadFromFirestore(uid) {
+            try {
+                const col = collection(db, 'users', uid, 'data');
+                const snap = await getDocs(col);
+                snap.forEach(d => {
+                    const key = d.id.replace(/_/g, function(m, offset, s) {
+                        // Przywróć oryginalne klucze — zostawiamy jak jest,
+                        // bo enkodowanie było tylko dla niedozwolonych znaków.
+                        return m;
+                    });
+                    // Zapisz do cache lokalnego (bez triggerowania fsSet)
+                    _origSet(d.id === key ? key : d.id, d.data().value);
+                    // Spróbuj też z oryginalną nazwą klucza (prefix_rok_miesiąc)
+                    _origSet(key, d.data().value);
+                });
+            } catch(e) { console.warn('loadFromFirestore', e); }
+        }
+
+        // ── LOGOWANIE GOOGLE ───────────────────────────────────────────────────
         window.googleLogin = async function() {
             const btn = document.getElementById('google-login-btn');
             if (btn) { btn.disabled = true; btn.textContent = '⏳ Logowanie...'; }
@@ -300,38 +377,53 @@
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
                 window._googleUser = user;
-                // Ukryj ekran logowania PIN, pokaż wybór roli
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('role-selection').style.display = 'flex';
-                // Wyświetl info o zalogowanym użytkowniku w panelu roli
-                const info = document.getElementById('google-user-info');
-                if (info) info.textContent = '👤 ' + user.displayName;
+                await loadFromFirestore(user.uid);
+                _afterGoogleAuth(user);
             } catch (e) {
                 alert('Błąd logowania Google: ' + e.message);
-                if (btn) { btn.disabled = false; btn.textContent = '  Zaloguj przez Google'; }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0;"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Zaloguj przez Google'; }
             }
         };
 
-        // Globalna funkcja wylogowania
+        // Po pomyślnym uwierzytelnieniu Google — sprawdź czy PIN wymagany
+        function _afterGoogleAuth(user) {
+            const info = document.getElementById('google-user-info');
+            if (info) info.textContent = '👤 ' + user.displayName;
+
+            const pinDisabled = localStorage.getItem('pin_disabled') === 'true';
+            if (pinDisabled) {
+                // PIN wyłączony → od razu wybór roli
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('role-selection').style.display = 'flex';
+            } else {
+                // PIN włączony → pokaż tylko klawiaturę PIN (ukryj przycisk Google)
+                document.getElementById('google-login-btn').style.display = 'none';
+                const hint = document.querySelector('.pin-default-hint');
+                if (hint) hint.style.display = 'none';
+                // Ustaw flagę: Google już OK, czekamy na PIN
+                window._googleAuthDone = true;
+                // Ekran PIN już widoczny — nic więcej
+            }
+        }
+
+        // ── WYLOGOWANIE ────────────────────────────────────────────────────────
         window.googleLogout = async function() {
             try {
                 await signOut(auth);
                 window._googleUser = null;
+                window._googleAuthDone = false;
                 location.reload();
             } catch(e) {
                 alert('Błąd wylogowania: ' + e.message);
             }
         };
 
-        // Sprawdź czy użytkownik już zalogowany (pamiętaj sesję)
-        onAuthStateChanged(auth, (user) => {
+        // ── SESJA ZAPAMIĘTANA ──────────────────────────────────────────────────
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window._googleUser = user;
-                // Pomiń ekran PIN i idź od razu do wyboru roli
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('role-selection').style.display = 'flex';
-                const info = document.getElementById('google-user-info');
-                if (info) info.textContent = '👤 ' + user.displayName;
+                await loadFromFirestore(user.uid);
+                _afterGoogleAuth(user);
             }
         });
     </script>
@@ -1201,11 +1293,23 @@ function checkInitialPinState() {
     // Zastosuj zapisany motyw natychmiast przy starcie — przed jakimkolwiek ekranem
     setTheme(localStorage.getItem('app_theme') || 'default');
 
+    // Ekran logowania zawsze pokazujemy na starcie.
+    // Firebase onAuthStateChanged (async) sam zdecyduje co dalej po weryfikacji sesji Google.
     const dis = localStorage.getItem('pin_disabled') === 'true';
-    document.getElementById('login-screen').style.display = dis ? 'none' : 'flex';
-    if (dis) document.getElementById('role-selection').style.display = 'flex';
+    document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('pin-toggle').checked = !dis;
     _pinBuffer = ""; _updateDots();
+
+    // Jesli PIN wylaczony i nie czekamy na Google — pokaz role po krotkim opoznieniu
+    // (Firebase nadpisze to jesli znajdzie sesje Google)
+    if (dis) {
+        setTimeout(() => {
+            if (!window._googleUser) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('role-selection').style.display = 'flex';
+            }
+        }, 900);
+    }
 }
 function togglePinSetting() {
     localStorage.setItem('pin_disabled', !document.getElementById('pin-toggle').checked);
@@ -1274,6 +1378,11 @@ function pinPress(digit) {
             if (_pinBuffer === getStoredPin()) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('role-selection').style.display = 'flex';
+                // Jesli Google juz zautoryzowany — pokazujemy info o uzytkowniku
+                if (window._googleUser) {
+                    const info = document.getElementById('google-user-info');
+                    if (info) info.textContent = '\u{1F464} ' + window._googleUser.displayName;
+                }
             } else {
                 // Shake effect on dots
                 const dots = document.querySelector('.pin-dots');
@@ -1307,6 +1416,10 @@ function checkPin() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('role-selection').style.display = 'flex';
         _pinBuffer = ""; _updateDots();
+        if (window._googleUser) {
+            const info = document.getElementById('google-user-info');
+            if (info) info.textContent = '\u{1F464} ' + window._googleUser.displayName;
+        }
     } else {
         alert("Niepoprawny PIN");
         _pinBuffer = ""; document.getElementById('pin-input').value = ""; _updateDots();
