@@ -230,6 +230,146 @@
 
         .sat { background-color: var(--sat-color) !important; }
         .sun { background-color: var(--sun-color) !important; }
+
+        /* ── MÓJ GRAFIK: widok kalendarza ── */
+        .grafik-cal { border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .grafik-cal-header { display: grid; grid-template-columns: repeat(7, 1fr); background: #f7f7f9; border-bottom: 1px solid #e0e0e0; }
+        .grafik-cal-header div { padding: 10px 4px; text-align: center; font-size: 11px; font-weight: bold; color: #666; letter-spacing: 0.5px; }
+        .grafik-cal-header .grafik-col-sat { color: #5a8f00; }
+        .grafik-cal-header .grafik-col-sun { color: #c0392b; }
+        .grafik-cal-body { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .grafik-day { min-height: 76px; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; padding: 6px; box-sizing: border-box; }
+        .grafik-day:nth-child(7n) { border-right: none; }
+        .grafik-day.empty { background: #fafafa; }
+        .grafik-day-num { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 5px; }
+        .grafik-badge { display: inline-block; font-size: 9px; font-weight: bold; padding: 3px 7px; border-radius: 5px; letter-spacing: 0.3px; margin-bottom: 4px; white-space: nowrap; }
+        .grafik-badge-z1 { background: #ffedd5; color: #b45309; }
+        .grafik-badge-z2 { background: #e0e7ff; color: #4338ca; }
+        .grafik-badge-z3 { background: #cffafe; color: #0e7490; }
+        .grafik-badge-off { background: #dcfce7; color: #15803d; }
+        .grafik-badge-holiday { background: #fee2e2; color: #b91c1c; }
+        .grafik-day-hours { font-size: 9px; color: #999; }
+        /* ── MÓJ GRAFIK: responsywny widok telefonu ──
+           Nie zmienia logiki ani sposobu wyliczania grafiku.
+           Na telefonie strona kalendarza dostosowuje się do szerokości ekranu. */
+        #moj-grafik {
+            width: 100%;
+            min-height: auto;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #moj-grafik .grafik-cal {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        #moj-grafik .grafik-cal-header,
+        #moj-grafik .grafik-cal-body {
+            width: 100%;
+        }
+
+        #moj-grafik .grafik-day {
+            min-width: 0;
+        }
+
+        @media (max-width: 700px) {
+            #moj-grafik {
+                padding: 8px 4px 16px 4px;
+            }
+
+            #moj-grafik .main-title {
+                font-size: 10pt;
+                margin-bottom: 8px;
+            }
+
+            #moj-grafik > div:nth-child(2) {
+                gap: 8px !important;
+                margin: 8px 0 12px 0 !important;
+            }
+
+            #moj-grafik > div:nth-child(2) button {
+                padding: 7px 10px !important;
+                font-size: 13px !important;
+                flex: 0 0 auto;
+            }
+
+            #moj-grafik > div:nth-child(2) > div {
+                min-width: 0 !important;
+                flex: 1 1 auto;
+                font-size: 14px !important;
+            }
+
+            .grafik-cal-header div {
+                padding: 7px 1px;
+                font-size: 9px;
+                letter-spacing: 0;
+            }
+
+            .grafik-day {
+                min-height: 62px;
+                padding: 3px 2px;
+            }
+
+            .grafik-day-num {
+                font-size: 10px;
+                margin-bottom: 3px;
+            }
+
+            .grafik-badge {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 7px;
+                padding: 3px 1px;
+                border-radius: 4px;
+                letter-spacing: 0;
+            }
+
+            .grafik-day-hours {
+                font-size: 6.5px;
+                white-space: nowrap;
+                letter-spacing: -0.2px;
+            }
+
+            #moj-grafik #grafik-summary {
+                font-size: 11px !important;
+                padding-right: 2px !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            #moj-grafik {
+                padding-left: 2px;
+                padding-right: 2px;
+            }
+
+            .grafik-cal-header div {
+                padding: 6px 0;
+                font-size: 8px;
+            }
+
+            .grafik-day {
+                min-height: 58px;
+                padding: 2px 1px;
+            }
+
+            .grafik-day-num {
+                font-size: 9px;
+            }
+
+            .grafik-badge {
+                font-size: 6.5px;
+                padding: 2px 0;
+            }
+
+            .grafik-day-hours {
+                font-size: 6px;
+            }
+        }
         .cell-input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-size: 8.5pt; outline: none; }
         .signature-section { margin-top: 40px; display: flex; justify-content: space-around; font-size: 9pt; }
         .sig-box { border-top: 1px dotted #000; width: 200px; text-align: center; padding-top: 8px; }
@@ -261,7 +401,36 @@
         .decl-text-content { font-size: 11pt; line-height: 1.6; text-align: justify; }
         .decl-section-title { font-weight: bold; margin-top: 25px; margin-bottom: 10px; }
 
+        /* ── PODGLĄD DOKUMENTU: warstwa na cały ekran ── */
+        #document-preview-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #4b4f54; display: flex; flex-direction: column;
+        }
+        #preview-topbar {
+            flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between;
+            gap: 8px; padding: 0 10px; height: 52px; background: #2c2f33; color: #fff;
+        }
+        #preview-topbar button {
+            padding: 8px 12px; border: none; border-radius: 4px; font-weight: bold;
+            font-size: 12px; cursor: pointer; background: #fff; color: #2c2f33;
+        }
+        #preview-topbar #preview-print-btn { background: var(--primary-blue, #0d6efd); color: #fff; }
+        #preview-title { font-size: 13px; font-weight: bold; opacity: 0.9; }
+        #preview-scroll-area {
+            flex: 1 1 auto; overflow: auto; padding: 14px 8px 40px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        #preview-page-wrap { width: 100%; display: flex; justify-content: center; }
+        .preview-page-clone { box-shadow: 0 0 12px rgba(0,0,0,0.35); }
+        .preview-page-clone input:disabled,
+        .preview-page-clone textarea:disabled,
+        .preview-page-clone select:disabled {
+            opacity: 1 !important; -webkit-text-fill-color: inherit; color: inherit;
+            background: transparent; cursor: default;
+        }
+
         @media print {
+            #document-preview-overlay { display: none !important; }
             .no-print-nav, #floating-menu, #login-screen, #role-selection, #settings-screen { display: none !important; }
             body { background: white; }
             .page-container { margin: 0; padding: 0; overflow: visible; }
@@ -568,6 +737,7 @@
 <!-- SETTINGS -->
 <div id="settings-screen">
     <div class="role-header">Ustawienia</div>
+    <button class="login-btn" style="background:#6c757d;width:auto;padding:10px 30px;margin-bottom:20px;" onclick="closeSettings()">POWRÓT</button>
     <div class="settings-container">
         <div class="settings-row">
             <h3 style="margin-top:0">Motyw ekranu głównego</h3>
@@ -590,6 +760,75 @@
                 <div class="toolbar-color-swatch" style="background:#bf360c;" onclick="setNavColor('#bf360c')" title="Ceglasty"></div>
                 <div class="toolbar-color-swatch" style="background:#37474f;" onclick="setNavColor('#37474f')" title="Stalowy"></div>
                 <div class="toolbar-color-swatch" style="background:#000000;" onclick="setNavColor('#000000')" title="Czarny"></div>
+            </div>
+        </div>
+        <div class="settings-row">
+            <h3 style="margin-top:0">🏷️ Nazwy i godziny przycisków szybkiego wpisu</h3>
+            <p style="font-size:12px;color:#666;margin-top:0;">Zmień etykiety oraz godziny przycisków Z1 / Z2 / Z3 / L4 / NB widocznych po kliknięciu w pole "Rozpoczęcia".</p>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="background:#f9f9f9;border-radius:8px;padding:10px;box-sizing:border-box;">
+                    <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;">Zmiana 1 (Z1)</label>
+                    <input type="text" autocomplete="off" id="quicklabel-z1" maxlength="12" oninput="saveQuickLabels()" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input type="time" autocomplete="off" id="quicktime-z1-start" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                        <span style="font-size:12px;color:#999;flex-shrink:0;">–</span>
+                        <input type="time" autocomplete="off" id="quicktime-z1-end" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                    </div>
+                </div>
+                <div style="background:#f9f9f9;border-radius:8px;padding:10px;box-sizing:border-box;">
+                    <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;">Zmiana 2 (Z2)</label>
+                    <input type="text" autocomplete="off" id="quicklabel-z2" maxlength="12" oninput="saveQuickLabels()" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input type="time" autocomplete="off" id="quicktime-z2-start" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                        <span style="font-size:12px;color:#999;flex-shrink:0;">–</span>
+                        <input type="time" autocomplete="off" id="quicktime-z2-end" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                    </div>
+                </div>
+                <div style="background:#f9f9f9;border-radius:8px;padding:10px;box-sizing:border-box;">
+                    <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;">Zmiana 3 (Z3)</label>
+                    <input type="text" autocomplete="off" id="quicklabel-z3" maxlength="12" oninput="saveQuickLabels()" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;margin-bottom:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <input type="time" autocomplete="off" id="quicktime-z3-start" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                        <span style="font-size:12px;color:#999;flex-shrink:0;">–</span>
+                        <input type="time" autocomplete="off" id="quicktime-z3-end" oninput="saveQuickTimes()" style="flex:1;min-width:0;box-sizing:border-box;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                    </div>
+                </div>
+                <div>
+                    <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;">Zwolnienie (L4)</label>
+                    <input type="text" autocomplete="off" id="quicklabel-l4" maxlength="12" oninput="saveQuickLabels()" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                </div>
+                <div>
+                    <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;">Nieobecność (NB)</label>
+                    <input type="text" autocomplete="off" id="quicklabel-nb" maxlength="12" oninput="saveQuickLabels()" style="width:100%;box-sizing:border-box;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                </div>
+            </div>
+        </div>
+        <div class="settings-row">
+            <h3 style="margin-top:0">📅 Mój Grafik</h3>
+            <p style="font-size:12px;color:#666;margin-top:0;">
+                Skonfiguruj automatyczny grafik zmianowy. Zaznaczone zmiany będą się na siebie zmieniać co tydzień (pon–pt). Sobota zawsze jest pierwszą zaznaczoną zmianą, niedziela i wykryte święta są zawsze wolne. "Mój Grafik" jest niezależny od Karty Pracy — nie zapisuje i nie nadpisuje żadnych danych w kartach pracy.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                    <input type="checkbox" id="grafik-active-z1" onchange="saveGrafikSettings()">
+                    <span id="grafik-chk-label-z1">Zmiana 1 (Z1)</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                    <input type="checkbox" id="grafik-active-z2" onchange="saveGrafikSettings()">
+                    <span id="grafik-chk-label-z2">Zmiana 2 (Z2)</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                    <input type="checkbox" id="grafik-active-z3" onchange="saveGrafikSettings()">
+                    <span id="grafik-chk-label-z3">Zmiana 3 (Z3)</span>
+                </label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+                <label style="font-size:12px;color:#555;">Data początkowa (dowolny dzień — punkt odniesienia dla rotacji)</label>
+                <input type="date" id="grafik-anchor-date" autocomplete="off" oninput="saveGrafikSettings()" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-size:12px;color:#555;">Zmiana obowiązująca w tygodniu zawierającym datę początkową</label>
+                <select id="grafik-anchor-shift" onchange="saveGrafikSettings()" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;"></select>
             </div>
         </div>
         <div class="settings-row">
@@ -699,25 +938,28 @@
                 <span id="privacy-arrow" style="font-size:14px;transition:transform 0.2s;">▼</span>
             </h3>
             <div id="privacy-content" style="display:none;margin-top:10px;">
-                <p style="font-size:12px;color:#333;line-height:1.6;margin:0 0 10px 0;font-weight:bold;">Ostatnia aktualizacja: maj 2025</p>
+                <p style="font-size:12px;color:#333;line-height:1.6;margin:0 0 10px 0;font-weight:bold;">Ostatnia aktualizacja: sierpień 2026</p>
 
                 <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>1. Administrator danych</strong><br>
-                Aplikacja „Karta Pracy" działa wyłącznie lokalnie na Twoim urządzeniu. Nie posiada serwera i nie wysyła żadnych danych osobowych do zewnętrznych systemów. Połączenie z Internetem jest wymagane wyłącznie opcjonalnie — przy ręcznym użyciu funkcji „Aktualizuj Święta", która pobiera listę polskich świąt z publicznego rejestru date.nager.at. Pobierane są wyłącznie daty świąt — żadne dane użytkownika nie są przesyłane.</p>
+                Administratorem danych jest właściciel/wydawca aplikacji „Karta Pracy". Aplikacja korzysta z usług Firebase (Firebase Authentication oraz Cloud Firestore), dostarczanych przez Google Ireland Limited / Google LLC, które w zakresie logowania i synchronizacji danych pełnią rolę podmiotu przetwarzającego dane w imieniu administratora. Połączenie z Internetem jest wymagane do logowania przez konto Google oraz do synchronizacji danych z chmurą, a także — opcjonalnie — przy ręcznym użyciu funkcji „Aktualizuj Święta", która pobiera listę polskich świąt z publicznego rejestru date.nager.at (pobierane są wyłącznie daty świąt, bez danych użytkownika).</p>
 
                 <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>2. Jakie dane są przetwarzane?</strong><br>
-                Aplikacja przetwarza wyłącznie dane wprowadzone przez użytkownika: imię i nazwisko pracownika, numer pracownika, godziny pracy oraz dane do kart urlopowych i oświadczeń.</p>
+                Aplikacja przetwarza dane wprowadzone przez użytkownika: imię i nazwisko pracownika, numer pracownika, godziny pracy oraz dane do kart urlopowych i oświadczeń. Dodatkowo, w związku z logowaniem przez konto Google, przetwarzane są: adres e-mail, nazwa wyświetlana i zdjęcie profilowe przypisane do konta Google użytkownika, a także unikalny identyfikator konta (UID) generowany przez Firebase Authentication.</p>
 
                 <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>3. Gdzie są przechowywane dane?</strong><br>
-                Wszystkie dane zapisywane są wyłącznie w pamięci lokalnej przeglądarki (<em>localStorage</em>) na Twoim urządzeniu. Nikt poza Tobą nie ma do nich dostępu.</p>
+                Dane są zapisywane lokalnie w pamięci przeglądarki (<em>localStorage</em>) na Twoim urządzeniu, a po zalogowaniu przez konto Google — dodatkowo synchronizowane i przechowywane w chmurowej bazie danych Cloud Firestore (infrastruktura Google), na serwerach zarządzanych przez Google. Dostęp do danych w chmurze jest ograniczony wyłącznie do konta Google, którym użytkownik się zalogował. Niektóre ustawienia urządzenia (np. motyw, kolor nawigacji, PIN, liczba dni urlopu) pozostają wyłącznie lokalne i nie są wysyłane do chmury.</p>
 
                 <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>4. Udostępnianie danych</strong><br>
-                Aplikacja nie udostępnia, nie sprzedaje ani nie przesyła żadnych danych osobom trzecim. Dane nie opuszczają Twojego urządzenia.</p>
+                Aplikacja nie sprzedaje danych i nie udostępnia ich w celach marketingowych. Dane przesyłane są wyłącznie do infrastruktury Firebase/Google w celu uwierzytelniania i synchronizacji między urządzeniami tego samego użytkownika. Google, jako dostawca usługi, może przetwarzać dane zgodnie z własną polityką prywatności (dostępną na stronach Google) oraz umowami dotyczącymi przetwarzania danych (DPA) zawartymi z Firebase. Dane mogą być przetwarzane na serwerach zlokalizowanych poza Europejskim Obszarem Gospodarczym, przy zastosowaniu standardowych klauzul umownych Google zapewniających zgodność z RODO.</p>
 
                 <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>5. Usuwanie danych</strong><br>
-                Dane możesz usunąć w dowolnym momencie korzystając z przycisku „USUŃ" w aplikacji lub poprzez wyczyszczenie danych przeglądarki w ustawieniach systemowych urządzenia.</p>
+                Dane możesz usunąć w dowolnym momencie korzystając z przycisku „USUŃ" w aplikacji — usuwa on dane zarówno lokalnie, jak i z chmury Firestore (jeśli jesteś zalogowany). Możesz też wyczyścić dane przeglądarki w ustawieniach systemowych urządzenia (usunie to jedynie kopię lokalną) lub wylogować się z konta Google w aplikacji. W celu całkowitego usunięcia konta i wszystkich powiązanych z nim danych z chmury, skontaktuj się z administratorem aplikacji.</p>
 
-                <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 0 0;"><strong>6. Pliki cookie</strong><br>
-                Aplikacja nie używa plików cookie ani żadnych mechanizmów śledzenia.</p>
+                <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 8px 0;"><strong>6. Pliki cookie i logowanie</strong><br>
+                Aplikacja sama nie używa własnych plików cookie ani mechanizmów śledzenia reklamowego. Proces logowania przez Google (Firebase Authentication) może korzystać z własnych mechanizmów sesji/tokenów Google, niezbędnych do działania logowania — są one zarządzane przez Google zgodnie z jego polityką prywatności.</p>
+
+                <p style="font-size:12px;color:#444;line-height:1.6;margin:0 0 0 0;"><strong>7. Kopia zapasowa (eksport/import)</strong><br>
+                Funkcja eksportu danych do pliku JSON tworzy kopię zapasową zapisywaną lokalnie na Twoim urządzeniu (np. w folderze pobranych plików) — plik ten nie jest nigdzie przesyłany automatycznie i pozostaje wyłącznie w Twojej dyspozycji.</p>
             </div>
         </div>
         <button class="login-btn" style="background:#6c757d;" onclick="closeSettings()">POWRÓT</button>
@@ -731,24 +973,26 @@
         <button class="tab-btn active" id="tab-karta"        onclick="switchTab('karta')">KARTA PRACY</button>
         <button class="tab-btn"        id="tab-urlop"        onclick="switchTab('urlop')">WNIOSEK URLOPOWY</button>
         <button class="tab-btn"        id="tab-oswiadczenie" onclick="switchTab('oswiadczenie')">OŚWIADCZENIE</button>
+        <button class="tab-btn"        id="tab-grafik"        onclick="switchTab('grafik')">MÓJ GRAFIK</button>
         <button onclick="changeMonth(-1)">⬅️</button>
         <button onclick="changeMonth(1)">➡️</button>
         <button class="clear-btn" onclick="clearCurrentMonth()">USUŃ</button>
         <div class="dropdown">
             <button class="dropbtn">DRUKUJ ▼</button>
             <div class="dropdown-content">
-                <button onclick="window.print()">🖨️ Z DANYMI</button>
-                <button onclick="printClean()">🧹 CZYSTA (BEZ DANYCH)</button>
+                <button onclick="window.print()">🖨️ DRUKUJ</button>
+                <button onclick="openDocumentPreview()">👁️ PODGLĄD DOKUMENTU</button>
             </div>
         </div>
         <button class="settings-btn" onclick="openSettings()">⚙️</button>
     </div>
 
     <div id="floating-menu">
-        <button onclick="fillCurrentRow('6:00','14:00')">Z1</button>
-        <button onclick="fillCurrentRow('14:00','22:00')">Z2</button>
-        <button onclick="fillCurrentRow('L4','')">L4</button>
-        <button onclick="fillCurrentRow('NB','')">NB</button>
+        <button id="quickcode-btn-z1" onclick="fillQuickCode('z1')">Z1</button>
+        <button id="quickcode-btn-z2" onclick="fillQuickCode('z2')">Z2</button>
+        <button id="quickcode-btn-z3" onclick="fillQuickCode('z3')">Z3</button>
+        <button id="quickcode-btn-l4" onclick="fillQuickCode('l4')">L4</button>
+        <button id="quickcode-btn-nb" onclick="fillQuickCode('nb')">NB</button>
     </div>
 
     <div class="page-container">
@@ -757,8 +1001,8 @@
         <div id="karta-pracy" class="page">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="mag-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="mag-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="mag-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="mag-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr.pracownika</span><span>(Imię i nazwisko)</span></div>
             <div class="date-container-box">
@@ -809,8 +1053,8 @@
         <div id="karta-op" class="page" style="display:none;">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="op-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="op-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="op-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="op-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr.pracownika</span><span>(Imię i nazwisko)</span></div>
             <div class="date-container-box">
@@ -863,8 +1107,8 @@
         <div id="karta-del" class="page" style="display:none;">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="del-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="del-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="del-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="del-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr.pracownika</span><span>(Imię i nazwisko)</span></div>
             <div class="date-container-box">
@@ -915,8 +1159,8 @@
         <div id="karta-aut" class="page" style="display:none;">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="aut-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="aut-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="aut-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="aut-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr.pracownika</span><span>(nazwisko i imię)</span></div>
             <div class="date-container-box">
@@ -967,8 +1211,8 @@
         <div id="karta-inne" class="page" style="display:none;">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="inne-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="inne-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="inne-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="inne-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr.pracownika</span><span>(nazwisko i Imię)</span></div>
             <div class="date-container-box">
@@ -1035,26 +1279,26 @@
                         <div class="vac-address-text">41-503 Chorzów<br>ul. Wiejska 27</div>
                     </div>
                     <div class="vac-date-area">
-                        <div class="vac-date-line"><input type="text" id="vac-current-date" class="data-field"></div>
+                        <div class="vac-date-line"><input type="text" autocomplete="off" id="vac-current-date" class="data-field"></div>
                         <div>Data wystawienia</div>
                     </div>
                 </div>
                 <div class="vac-title">Wniosek o urlop</div>
                 <div class="vac-main-row">
                     <span class="vac-label">Nazwisko i imię pracownika :</span>
-                    <input type="text" class="vac-dots-input data-field" id="u-name" oninput="saveGlobal(this)">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" id="u-name" oninput="saveGlobal(this)">
                 </div>
                 <div class="vac-main-row">
                     <span class="vac-label">Proszę o udzielenie urlopu :</span>
-                    <input type="text" class="vac-dots-input data-field" value="wypoczynkowego">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" value="wypoczynkowego">
                 </div>
                 <div class="vac-main-row">
                     <span class="vac-label">W dniach od</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:120px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:120px;">
                     <span class="vac-label" style="margin-left:10px;">do</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:120px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:120px;">
                     <span class="vac-label" style="margin-left:10px;">tj. dni</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:80px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:80px;">
                 </div>
                 <div class="vac-signature-right"><div class="vac-signature-line">podpis pracownika</div></div>
                 <div class="vac-approval-row">
@@ -1076,26 +1320,26 @@
                         <div class="vac-address-text">41-503 Chorzów<br>ul. Wiejska 27</div>
                     </div>
                     <div class="vac-date-area">
-                        <div class="vac-date-line"><input type="text" id="vac2-current-date" class="data-field"></div>
+                        <div class="vac-date-line"><input type="text" autocomplete="off" id="vac2-current-date" class="data-field"></div>
                         <div>Data wystawienia</div>
                     </div>
                 </div>
                 <div class="vac-title">Wniosek o urlop</div>
                 <div class="vac-main-row">
                     <span class="vac-label">Nazwisko i imię pracownika :</span>
-                    <input type="text" class="vac-dots-input data-field" id="vac2-name">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" id="vac2-name">
                 </div>
                 <div class="vac-main-row">
                     <span class="vac-label">Proszę o udzielenie urlopu :</span>
-                    <input type="text" class="vac-dots-input data-field" value="wypoczynkowego">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" value="wypoczynkowego">
                 </div>
                 <div class="vac-main-row">
                     <span class="vac-label">W dniach od</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:120px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:120px;">
                     <span class="vac-label" style="margin-left:10px;">do</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:120px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:120px;">
                     <span class="vac-label" style="margin-left:10px;">tj. dni</span>
-                    <input type="text" class="vac-dots-input data-field" style="width:80px;">
+                    <input type="text" autocomplete="off" class="vac-dots-input data-field" style="width:80px;">
                 </div>
                 <div class="vac-signature-right"><div class="vac-signature-line">podpis pracownika</div></div>
                 <div class="vac-approval-row">
@@ -1117,7 +1361,7 @@
                 <div class="decl-title-sub">o udzieleniu dnia wolnego w zamian za pracę w dniu wolnym od pracy wynikającym z przeciętnie pięciodniowego tygodnia pracy</div>
             </div>
             <div class="decl-info-line">
-                sporządzone w dniu <input type="text" class="header-input-dotted data-field" id="decl-date" style="width:150px;"> w Chorzowie
+                sporządzone w dniu <input type="text" autocomplete="off" class="header-input-dotted data-field" id="decl-date" style="width:150px;"> w Chorzowie
             </div>
             <div class="decl-section-title">Pracodawca:</div>
             <div class="decl-text-content" style="font-weight:bold;margin-bottom:20px;">
@@ -1125,12 +1369,12 @@
             </div>
             <div class="decl-section-title">Pracownik:</div>
             <div class="decl-info-line">
-                <input type="text" class="header-input-dotted data-field" id="decl-emp-name" style="width:250px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="decl-emp-name" style="width:250px;" oninput="saveGlobal(this)">
             </div>
             <div class="decl-text-content" style="margin-top:30px;">
                 Działając na podstawie art. 151<sup>3</sup> Kodeksu pracy, pracodawca oświadcza, że:<br>
                 Pracownik wykonywał pracę w soboty przypadające w miesiącu
-                <input type="text" class="header-input-dotted data-field" id="decl-month" style="width:200px;">,
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="decl-month" style="width:200px;">,
                 stanowiące dni wolne od pracy wynikające z obowiązującego go rozkładu czasu pracy w przeciętnie pięciodniowym tygodniu pracy.
             </div>
             <div class="decl-text-content" style="margin-top:20px;">
@@ -1153,12 +1397,41 @@
             </div>
         </div>
 
+        <!-- ══════════════════════════════════════════ MÓJ GRAFIK ══ -->
+        <div id="moj-grafik" class="page" style="display:none;">
+            <div class="main-title">Mój Grafik</div>
+            <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin:15px 0 20px 0;">
+                <button onclick="grafikChangeMonth(-1)" style="padding:8px 16px;border-radius:6px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer;font-size:14px;">⬅️</button>
+                <div style="font-weight:bold;font-size:16px;min-width:180px;text-align:center;">
+                    <span id="grafik-m"></span> <span id="grafik-y"></span>
+                </div>
+                <button onclick="grafikChangeMonth(1)" style="padding:8px 16px;border-radius:6px;border:1px solid #ccc;background:#f5f5f5;cursor:pointer;font-size:14px;">➡️</button>
+            </div>
+
+            <div id="grafik-empty-state" style="display:none;text-align:center;color:#666;padding:30px;background:#f9f9f9;border-radius:8px;">
+                Grafik nie jest jeszcze skonfigurowany.<br>
+                Przejdź do ⚙️ Ustawień → sekcja "📅 Mój Grafik", zaznacz swoje zmiany i ustaw datę początkową.
+            </div>
+
+            <div id="grafik-calendar" class="grafik-cal" style="display:none;">
+                <div class="grafik-cal-header">
+                    <div>PON</div><div>WT</div><div>ŚR</div><div>CZW</div><div>PT</div>
+                    <div class="grafik-col-sat">SOB</div><div class="grafik-col-sun">ND</div>
+                </div>
+                <div class="grafik-cal-body" id="grafik-cal-body"></div>
+            </div>
+
+            <div id="grafik-summary" style="display:none;text-align:right;font-size:12px;color:#555;margin-top:10px;padding-right:4px;">
+                Razem godzin w miesiącu: <strong id="grafik-total"></strong>
+            </div>
+        </div>
+
         <!-- ══════════════════════════════════════════ EDYCJA ══ -->
         <div id="karta-edycja" class="page" style="display:none;">
             <div class="main-title">Indywidualna karta czasu pracy pracownika</div>
             <div class="employee-info-row">
-                <input type="text" class="header-input-dotted data-field" id="edycja-id"   style="width:220px;" oninput="saveGlobal(this)">
-                <input type="text" class="header-input-dotted data-field" id="edycja-name" style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="edycja-id"   style="width:220px;" oninput="saveGlobal(this)">
+                <input type="text" autocomplete="off" class="header-input-dotted data-field" id="edycja-name" style="width:220px;" oninput="saveGlobal(this)">
             </div>
             <div class="header-labels"><span>Nr pracownika</span><span>(Imię i nazwisko)</span></div>
             <div class="date-container-box">
@@ -1169,20 +1442,20 @@
                 <thead>
                     <tr>
                         <th rowspan="2" style="width:5%">Dzień</th>
-                        <th rowspan="2" style="width:15%"><input type="text" class="cell-input data-field" id="edycja-h0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th rowspan="2" style="width:15%"><input type="text" class="cell-input data-field" id="edycja-h1" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th rowspan="2" style="width:11%"><input type="text" class="cell-input data-field" id="edycja-h2" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" class="cell-input data-field" id="edycja-h3" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" class="cell-input data-field" id="edycja-h4" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" class="cell-input data-field" id="edycja-h5" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" class="cell-input data-field" id="edycja-h6" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th rowspan="2" style="width:15%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th rowspan="2" style="width:15%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h1" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th rowspan="2" style="width:11%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h2" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h3" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h4" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h5" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h6" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
                     </tr>
                     <tr>
-                        <th><input type="text" class="cell-input data-field" id="edycja-s0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" class="cell-input data-field" id="edycja-s1h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" class="cell-input data-field" id="edycja-s2h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" class="cell-input data-field" id="edycja-s3h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" class="cell-input data-field" id="edycja-s4h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s1h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s2h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s3h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s4h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
                     </tr>
                 </thead>
                 <tbody id="body-edycja"></tbody>
@@ -1277,7 +1550,10 @@ const months   = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipie
 const holidaysBuiltIn = {
     "2025": ["2025-01-01","2025-01-06","2025-04-20","2025-04-21","2025-05-01","2025-05-03","2025-06-19","2025-08-15","2025-11-01","2025-11-11","2025-12-25","2025-12-26"],
     "2026": ["2026-01-01","2026-01-06","2026-04-05","2026-04-06","2026-05-01","2026-05-03","2026-06-04","2026-08-15","2026-11-01","2026-11-11","2026-12-25","2026-12-26"],
-    "2027": ["2027-01-01","2027-01-06","2027-03-28","2027-03-29","2027-05-01","2027-05-03","2027-05-27","2027-08-15","2027-11-01","2027-11-11","2027-12-25","2027-12-26"]
+    "2027": ["2027-01-01","2027-01-06","2027-03-28","2027-03-29","2027-05-01","2027-05-03","2027-05-27","2027-08-15","2027-11-01","2027-11-11","2027-12-25","2027-12-26"],
+    "2028": ["2028-01-01","2028-01-06","2028-04-16","2028-04-17","2028-05-01","2028-05-03","2028-06-15","2028-08-15","2028-11-01","2028-11-11","2028-12-25","2028-12-26"],
+    "2029": ["2029-01-01","2029-01-06","2029-04-01","2029-04-02","2029-05-01","2029-05-03","2029-05-31","2029-08-15","2029-11-01","2029-11-11","2029-12-25","2029-12-26"],
+    "2030": ["2030-01-01","2030-01-06","2030-04-21","2030-04-22","2030-05-01","2030-05-03","2030-06-20","2030-08-15","2030-11-01","2030-11-11","2030-12-25","2030-12-26"]
 };
 // Święta stałe dla każdego roku (dzień-miesiąc)
 const permanentHolidays = ["12-24"]; // Wigilia - ustawowo wolna od 2025
@@ -1501,6 +1777,11 @@ function openSettings() {
     document.getElementById('pin-toggle').checked = localStorage.getItem('pin_disabled') !== 'true';
     applyNavColor();
     loadHolidaysStatus();
+    loadQuickLabels();
+    loadQuickTimes();
+    applyQuickLabels();
+    loadGrafikSettings();
+    applyGrafikSettingsToUI();
     // reset PIN change UI
     _chgBuf = { old: "", new: "", confirm: "" };
     ['old','new','confirm'].forEach(s => _chgUpdateDots(s));
@@ -1528,7 +1809,7 @@ function goToRoles() {
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
-    ['karta-pracy','karta-op','karta-del','karta-aut','karta-inne','karta-edycja','wniosek-urlopowy','oswiadczenie']
+    ['karta-pracy','karta-op','karta-del','karta-aut','karta-inne','karta-edycja','wniosek-urlopowy','oswiadczenie','moj-grafik']
         .forEach(id => document.getElementById(id).style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
@@ -1542,6 +1823,10 @@ function switchTab(tab) {
     } else if (tab === 'oswiadczenie') {
         document.getElementById('oswiadczenie').style.display = 'block';
         document.getElementById('tab-oswiadczenie').classList.add('active');
+    } else if (tab === 'grafik') {
+        document.getElementById('moj-grafik').style.display = 'block';
+        document.getElementById('tab-grafik').classList.add('active');
+        renderGrafik();
     }
 }
 
@@ -1715,6 +2000,10 @@ function loadEdycjaHeaders() {
 function init() {
     setTheme(localStorage.getItem('app_theme') || 'default');
     applyNavColor();
+    loadQuickLabels();
+    loadQuickTimes();
+    applyQuickLabels();
+    loadGrafikSettings();
     setVacCount(parseInt(localStorage.getItem('vac_count') || '1'));
     const savedName = localStorage.getItem('global_name') || "";
     const savedId   = localStorage.getItem('global_id')   || "";
@@ -1805,10 +2094,10 @@ function buildRows(y, m, daysInMonth, saved, colCount, bodyId) {
         let html = `<td>${d}</td>`;
         for (let i = 0; i < colCount; i++) {
             const val = rowData[i] || "";
-            // col 2 is readonly only if NOT editableHours mode
-            const ro  = (i === 2 && !editableHours) ? "readonly" : "";
+            // col 2 (ilość godz.) jest teraz zawsze edytowalne — w trybie automatycznym
+            // nadal przelicza się samo z Rozpoczęcia/Zakończenia, ale można je też nadpisać ręcznie
             const onf = i === 0 ? `onfocus="showMenu(event,${d})"` : "";
-            html += `<td><input type="text" class="cell-input data-field" value="${val}" ${ro} ${onf} oninput="updateRow(${d})"></td>`;
+            html += `<td><input type="text" autocomplete="off" class="cell-input data-field" value="${val}" ${onf} oninput="updateRow(${d},${i})"></td>`;
         }
         tr.innerHTML = html;
         tbody.appendChild(tr);
@@ -1816,17 +2105,24 @@ function buildRows(y, m, daysInMonth, saved, colCount, bodyId) {
 }
 
 // ── UPDATE ROW ────────────────────────────────────────────────────────────────
-function updateRow(day) {
+function updateRow(day, changedCol) {
     const cfg    = ROLES[currentRole] || ROLES['Magazynier'];
     const inputs = document.getElementById(cfg.bodyId).rows[day-1].querySelectorAll('input');
 
-    // In editableHours mode col 2 is typed manually — don't overwrite it
-    if (!cfg.editableHours) {
+    // In editableHours mode col 2 is typed manually — don't overwrite it.
+    // Also: jeśli zmiana przyszła bezpośrednio z kolumny "ilość godz." (ręczna korekta
+    // w trybie automatycznym), nie przeliczamy jej na nowo z Rozpoczęcia/Zakończenia.
+    if (!cfg.editableHours && changedCol !== 2) {
         let start = inputs[0].value, end = inputs[1].value, diff = "";
         if (start.includes(':') && end.includes(':')) {
             const eMin = toMin(end), sMin = toMin(start);
-            if (eMin > sMin) diff = (eMin - sMin) / 60;
-        } else if (['L4','NB'].includes(start.toUpperCase())) {
+            // Zmiana przechodząca przez północ (np. 15:00–00:00, 22:00–06:00):
+            // jeśli koniec nie jest później niż początek, traktujemy go jako
+            // następny dzień (+24h), zamiast zostawiać puste pole.
+            let minutesDiff = eMin - sMin;
+            if (minutesDiff <= 0) minutesDiff += 24 * 60;
+            diff = minutesDiff / 60;
+        } else if (getAbsenceLabels().includes(start.toUpperCase())) {
             diff = 0; inputs[1].value = "";
         }
         inputs[2].value = formatNumber(diff);
@@ -1843,6 +2139,270 @@ function fillCurrentRow(start, end) {
     inputs[1].value = end;
     document.getElementById('floating-menu').style.display = 'none';
     updateRow(lastFocusedDay);
+}
+
+// ── SZYBKIE KODY (Z1 / Z2 / Z3 / L4 / NB) — konfigurowalne nazwy ──────────────
+// Domyślne definicje: Z1/Z2/Z3 wpisują godziny, L4/NB wpisują swoją nazwę jako
+// "Rozpoczęcia" (bez godzin) — dokładnie tak jak dotychczas. Same nazwy (etykiety)
+// są konfigurowalne w Ustawieniach; logika działania pozostaje identyczna.
+const QUICK_CODES_DEFAULT = { z1: 'Z1', z2: 'Z2', z3: 'Z3', l4: 'L4', nb: 'NB' };
+const QUICK_CODES_TYPE    = { z1: 'time', z2: 'time', z3: 'time', l4: 'absence', nb: 'absence' };
+const QUICK_TIMES_DEFAULT = { z1: ['06:00','14:00'], z2: ['14:00','22:00'], z3: ['22:00','06:00'] };
+const QUICK_TIME_KEYS = Object.keys(QUICK_CODES_TYPE).filter(key => QUICK_CODES_TYPE[key] === 'time');
+let quickLabels = { ...QUICK_CODES_DEFAULT };
+let quickTimes  = {};
+QUICK_TIME_KEYS.forEach(key => { quickTimes[key] = [...QUICK_TIMES_DEFAULT[key]]; });
+
+function loadQuickLabels() {
+    const saved = JSON.parse(localStorage.getItem('quickcode_labels') || '{}');
+    quickLabels = { ...QUICK_CODES_DEFAULT, ...saved };
+}
+
+function saveQuickLabels() {
+    Object.keys(QUICK_CODES_DEFAULT).forEach(key => {
+        const el = document.getElementById('quicklabel-' + key);
+        if (el) quickLabels[key] = el.value.trim() || QUICK_CODES_DEFAULT[key];
+    });
+    localStorage.setItem('quickcode_labels', JSON.stringify(quickLabels));
+    applyQuickLabels();
+}
+
+// Uzupełnia zerem wiodącym godzinę zapisaną wcześniej w formacie "6:00" (self-healing
+// starszych zapisów), tak by pole <input type="time" autocomplete="off"> zawsze poprawnie ją wyświetliło
+function padTime(t) {
+    if (!t || !t.includes(':')) return t;
+    const [h, m] = t.split(':');
+    return h.padStart(2, '0') + ':' + m;
+}
+
+function loadQuickTimes() {
+    const saved = JSON.parse(localStorage.getItem('quickcode_times') || '{}');
+    quickTimes = {};
+    QUICK_TIME_KEYS.forEach(key => {
+        quickTimes[key] = (saved[key] && saved[key].length === 2) ? saved[key].map(padTime) : [...QUICK_TIMES_DEFAULT[key]];
+    });
+}
+
+function saveQuickTimes() {
+    QUICK_TIME_KEYS.forEach(key => {
+        const startEl = document.getElementById('quicktime-' + key + '-start');
+        const endEl   = document.getElementById('quicktime-' + key + '-end');
+        // Zachowujemy format "HH:MM" (z zerem wiodącym) — dzięki temu pole
+        // <input type="time" autocomplete="off"> poprawnie wyświetla zapisaną wartość po powrocie
+        // do Ustawień. Liczenie godzin w tabeli działa identycznie z zerem
+        // wiodącym i bez niego (parseInt je ignoruje), więc logika się nie zmienia.
+        const start = (startEl && startEl.value) ? startEl.value : QUICK_TIMES_DEFAULT[key][0];
+        const end   = (endEl && endEl.value)   ? endEl.value   : QUICK_TIMES_DEFAULT[key][1];
+        quickTimes[key] = [start, end];
+    });
+    localStorage.setItem('quickcode_times', JSON.stringify(quickTimes));
+}
+
+// Odśwież tekst na przyciskach oraz pola w Ustawieniach zgodnie z zapisanymi nazwami/godzinami
+function applyQuickLabels() {
+    Object.keys(QUICK_CODES_DEFAULT).forEach(key => {
+        const btn = document.getElementById('quickcode-btn-' + key);
+        if (btn) btn.innerText = quickLabels[key];
+        const input = document.getElementById('quicklabel-' + key);
+        if (input && document.activeElement !== input) input.value = quickLabels[key];
+    });
+    QUICK_TIME_KEYS.forEach(key => {
+        const startEl = document.getElementById('quicktime-' + key + '-start');
+        const endEl   = document.getElementById('quicktime-' + key + '-end');
+        if (startEl && document.activeElement !== startEl) startEl.value = quickTimes[key][0];
+        if (endEl && document.activeElement !== endEl)     endEl.value   = quickTimes[key][1];
+    });
+}
+
+// Lista etykiet, które oznaczają nieobecność (odpowiednik dawnego ['L4','NB'])
+function getAbsenceLabels() {
+    return Object.keys(QUICK_CODES_TYPE)
+        .filter(key => QUICK_CODES_TYPE[key] === 'absence')
+        .map(key => quickLabels[key].toUpperCase());
+}
+
+function fillQuickCode(key) {
+    if (QUICK_CODES_TYPE[key] === 'time') {
+        const [start, end] = quickTimes[key];
+        fillCurrentRow(start, end);
+    } else {
+        fillCurrentRow(quickLabels[key], '');
+    }
+}
+
+// ── MÓJ GRAFIK ──────────────────────────────────────────────────────────────────
+// Funkcja całkowicie niezależna od Karty Pracy: nic tu nie jest zapisywane per-dzień,
+// wszystko jest wyliczane na bieżąco na podstawie ustawień (zaznaczone zmiany +
+// data początkowa). Dzięki temu nigdy nie koliduje z danymi w kartach pracy.
+let grafikCurrent = new Date();
+const GRAFIK_SHIFT_ORDER = ['z1', 'z2', 'z3'];
+let grafikSettings = { active: { z1: false, z2: false, z3: false }, anchorDate: '', anchorKey: '' };
+
+function loadGrafikSettings() {
+    const saved = JSON.parse(localStorage.getItem('mojgrafik_settings') || '{}');
+    grafikSettings = {
+        active: { z1: false, z2: false, z3: false, ...(saved.active || {}) },
+        anchorDate: saved.anchorDate || '',
+        anchorKey: saved.anchorKey || ''
+    };
+}
+
+// Zwraca listę kluczy aktywnych zmian w ustalonym porządku (z1, z2, z3)
+function getActiveGrafikShifts() {
+    return GRAFIK_SHIFT_ORDER.filter(key => grafikSettings.active[key]);
+}
+
+function refreshGrafikAnchorOptions() {
+    const sel = document.getElementById('grafik-anchor-shift');
+    if (!sel) return;
+    const active = getActiveGrafikShifts();
+    const prevValue = grafikSettings.anchorKey;
+    sel.innerHTML = '';
+    active.forEach(key => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.innerText = quickLabels[key] || key.toUpperCase();
+        sel.appendChild(opt);
+    });
+    sel.value = active.includes(prevValue) ? prevValue : (active[0] || '');
+    grafikSettings.anchorKey = sel.value;
+}
+
+// Odśwież checkboxy, datę i listę zmian w Ustawieniach na podstawie zapisanej konfiguracji
+function applyGrafikSettingsToUI() {
+    GRAFIK_SHIFT_ORDER.forEach(key => {
+        const chk = document.getElementById('grafik-active-' + key);
+        if (chk) chk.checked = !!grafikSettings.active[key];
+        const lbl = document.getElementById('grafik-chk-label-' + key);
+        if (lbl) lbl.innerText = (quickLabels[key] || key.toUpperCase()) + ' (' + key.toUpperCase() + ')';
+    });
+    const dateEl = document.getElementById('grafik-anchor-date');
+    if (dateEl) dateEl.value = grafikSettings.anchorDate;
+    refreshGrafikAnchorOptions();
+}
+
+function saveGrafikSettings() {
+    GRAFIK_SHIFT_ORDER.forEach(key => {
+        const chk = document.getElementById('grafik-active-' + key);
+        if (chk) grafikSettings.active[key] = chk.checked;
+    });
+    const dateEl = document.getElementById('grafik-anchor-date');
+    if (dateEl) grafikSettings.anchorDate = dateEl.value;
+    refreshGrafikAnchorOptions();
+    const selEl = document.getElementById('grafik-anchor-shift');
+    if (selEl) grafikSettings.anchorKey = selEl.value;
+    localStorage.setItem('mojgrafik_settings', JSON.stringify(grafikSettings));
+}
+
+// Poniedziałek tygodnia zawierającego podaną datę (do liczenia numeru tygodnia)
+function mondayOf(d) {
+    const dow    = d.getDay(); // 0=niedziela..6=sobota
+    const offset = (dow === 0) ? 6 : dow - 1;
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate() - offset);
+}
+
+// Wylicza zmianę dla danego dnia zgodnie z regułami: niedziela i święta = wolne,
+// sobota = zawsze pierwsza zaznaczona zmiana, pon-pt = rotacja tygodniowa
+function computeShiftForDate(dateObj) {
+    const active = getActiveGrafikShifts();
+    if (active.length === 0 || !grafikSettings.anchorDate) return { type: 'unconfigured' };
+
+    const dow = dateObj.getDay();
+    const iso = dateObj.getFullYear() + "-" + pad(dateObj.getMonth()+1) + "-" + pad(dateObj.getDate());
+    const mmdd = pad(dateObj.getMonth()+1) + "-" + pad(dateObj.getDate());
+    // Uwaga: sprawdzamy święta dla roku KONKRETNEGO dnia (dateObj), a nie roku aktualnie
+    // wybranego w Karcie Pracy (getHolidays()) — Mój Grafik ma być od niej niezależny.
+    const isHoliday = getHolidaysForYear(dateObj.getFullYear()).includes(iso) || permanentHolidays.includes(mmdd);
+
+    if (isHoliday) return { type: 'off', reason: 'święto' };
+    if (dow === 0)  return { type: 'off', reason: 'niedziela' };
+
+    // Numer tygodnia względem daty początkowej — decyduje, która zmiana obowiązuje
+    const [ay, am, ad] = grafikSettings.anchorDate.split('-').map(Number);
+    const anchorDateObj = new Date(ay, am - 1, ad);
+    const anchorMonday  = mondayOf(anchorDateObj);
+    const thisMonday     = mondayOf(dateObj);
+    const weekIndex = Math.round((thisMonday - anchorMonday) / (7 * 86400000));
+    const anchorIdx  = active.includes(grafikSettings.anchorKey) ? active.indexOf(grafikSettings.anchorKey) : 0;
+    const idx = ((anchorIdx + weekIndex) % active.length + active.length) % active.length;
+
+    // Sobota pracuje tylko w tygodniach pierwszej zmiany — w tygodniach innych zmian jest wolna
+    if (dow === 6 && idx !== 0) return { type: 'off', reason: 'sobota' };
+
+    const key = active[idx];
+    const [start, end] = quickTimes[key];
+    const sMin = toMin(start);
+    let eMin   = toMin(end);
+    if (eMin <= sMin) eMin += 24 * 60;
+    const hours = (eMin - sMin) / 60;
+    return { type: 'shift', key, label: quickLabels[key], start, end, hours };
+}
+
+function grafikChangeMonth(delta) {
+    grafikCurrent.setMonth(grafikCurrent.getMonth() + delta);
+    renderGrafik();
+}
+
+const GRAFIK_ROMAN = { z1: 'I', z2: 'II', z3: 'III' };
+
+function renderGrafik() {
+    const y = grafikCurrent.getFullYear();
+    const m = grafikCurrent.getMonth();
+    document.getElementById('grafik-m').innerText = months[m];
+    document.getElementById('grafik-y').innerText = y;
+
+    const active  = getActiveGrafikShifts();
+    const cal     = document.getElementById('grafik-calendar');
+    const empty   = document.getElementById('grafik-empty-state');
+    const summary = document.getElementById('grafik-summary');
+    if (active.length === 0 || !grafikSettings.anchorDate) {
+        cal.style.display = 'none';
+        summary.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+    }
+    cal.style.display = 'block';
+    summary.style.display = 'block';
+    empty.style.display = 'none';
+
+    const daysInMonth  = new Date(y, m+1, 0).getDate();
+    const firstDow     = new Date(y, m, 1).getDay(); // 0=niedziela..6=sobota
+    const leadingBlanks = (firstDow === 0) ? 6 : firstDow - 1; // ile puste pola przed dniem 1 (tydzień od poniedziałku)
+
+    const body = document.getElementById('grafik-cal-body');
+    body.innerHTML = '';
+    let totalHours = 0;
+
+    for (let i = 0; i < leadingBlanks; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'grafik-day empty';
+        body.appendChild(blank);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dateObj = new Date(y, m, d);
+        const info    = computeShiftForDate(dateObj);
+
+        const cell = document.createElement('div');
+        cell.className = 'grafik-day';
+
+        let badgeHtml, hoursHtml = '';
+        if (info.type === 'shift') {
+            totalHours += info.hours;
+            const roman = GRAFIK_ROMAN[info.key] || info.label;
+            badgeHtml = `<div class="grafik-badge grafik-badge-${info.key}">${roman} ZMIANA</div>`;
+            hoursHtml = `<div class="grafik-day-hours">${info.start} – ${info.end}</div>`;
+        } else if (info.reason === 'święto') {
+            badgeHtml = `<div class="grafik-badge grafik-badge-holiday">ŚWIĘTO</div>`;
+        } else {
+            badgeHtml = `<div class="grafik-badge grafik-badge-off">WOLNE</div>`;
+        }
+
+        cell.innerHTML = `<div class="grafik-day-num">${d}</div>${badgeHtml}${hoursHtml}`;
+        body.appendChild(cell);
+    }
+
+    document.getElementById('grafik-total').innerText = formatNumber(totalHours) + ' godz.';
 }
 
 // ── TOTALS ────────────────────────────────────────────────────────────────────
@@ -1898,25 +2458,12 @@ function clearCurrentMonth() {
     render();
 }
 
-// ── DRUK BEZ DANYCH ───────────────────────────────────────────────────────────
-// Zamiast ukrywać kolor (co nie pomaga dla wartości <input>),
-// tymczasowo zerujemy wartości pól i przywracamy je po zamknięciu okna druku.
-function printClean() {
-    // Pobierz aktualny HTML strony
-    var html = document.documentElement.outerHTML;
-
-    // Wyczyść wartości wszystkich data-field inputów w HTML (regex na value="...")
-    // oraz treść .data-text spanów
-    // Robimy to na poziomie stringa HTML - nowe okno nigdy nie będzie miało danych
-
-    // 1. Otwórz nowe okno
-    var win = window.open('', '_blank');
-    if (!win) {
-        alert('Przeglądarka zablokowała nowe okno. Zezwól na pop-upy dla tej strony.');
-        return;
-    }
-
-    // 2. Sklonuj bieżącą kartę (tylko widoczny .page) bez danych
+// ── PODGLĄD DOKUMENTU ─────────────────────────────────────────────────────────
+// Pokazuje aktualnie widoczną stronę (.page) w warstwie na całym ekranie telefonu,
+// dopasowaną skalą do szerokości ekranu — bez zmiany żadnych danych ani logiki
+// aplikacji. To tylko podgląd "jak będzie wyglądał wydruk", z możliwością
+// zamknięcia lub bezpośredniego wydrukowania.
+function openDocumentPreview() {
     // Znajdź aktualnie widoczny .page
     var pages = document.querySelectorAll('.page');
     var visiblePage = null;
@@ -1926,32 +2473,76 @@ function printClean() {
         }
     });
     if (!visiblePage) visiblePage = pages[0];
+    if (!visiblePage) { alert('Brak dokumentu do podglądu.'); return; }
 
-    var pageClone = visiblePage.cloneNode(true);
+    // Usuń ewentualny wcześniej otwarty podgląd
+    closeDocumentPreview();
 
-    // 3. Wyczyść wszystkie data-field i data-text w klonie
-    pageClone.querySelectorAll('input.data-field, textarea.data-field').forEach(function(el) {
-        el.value = '';
-        el.removeAttribute('value');
+    // 1. Zbuduj warstwę na cały ekran
+    var overlay = document.createElement('div');
+    overlay.id = 'document-preview-overlay';
+
+    var topbar = document.createElement('div');
+    topbar.id = 'preview-topbar';
+    topbar.innerHTML =
+        '<button type="button" id="preview-print-btn">🖨️ Drukuj</button>' +
+        '<span id="preview-title">Podgląd dokumentu</span>' +
+        '<button type="button" id="preview-close-btn">✕ Zamknij</button>';
+    overlay.appendChild(topbar);
+
+    var scrollArea = document.createElement('div');
+    scrollArea.id = 'preview-scroll-area';
+
+    var pageWrap = document.createElement('div');
+    pageWrap.id = 'preview-page-wrap';
+
+    // 2. Sklonuj widoczną stronę razem z aktualnymi danymi (tylko do podglądu —
+    // oryginalna strona i dane w niej pozostają nietknięte)
+    var clone = visiblePage.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.classList.add('preview-page-clone');
+
+    var origFields  = visiblePage.querySelectorAll('input, textarea, select');
+    var cloneFields = clone.querySelectorAll('input, textarea, select');
+    origFields.forEach(function(el, i) {
+        var c = cloneFields[i];
+        if (!c) return;
+        c.value = el.value;
+        c.disabled = true;
     });
-    pageClone.querySelectorAll('.data-text').forEach(function(el) {
-        el.innerText = '';
-    });
 
-    // 4. Pobierz style z oryginalnej strony
-    var styles = '';
-    document.querySelectorAll('style').forEach(function(s) { styles += s.outerHTML; });
+    pageWrap.appendChild(clone);
+    scrollArea.appendChild(pageWrap);
+    overlay.appendChild(scrollArea);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
 
-    // 5. Zapisz dokument w nowym oknie i wywołaj druk
-    win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' + styles + '</head><body>' + pageClone.outerHTML + '</body></html>');
-    win.document.close();
+    // 3. Dopasuj skalę strony do szerokości ekranu telefonu
+    function fitScale() {
+        clone.style.transform = 'none';
+        var naturalWidth = clone.offsetWidth;
+        if (!naturalWidth) return;
+        var available = scrollArea.clientWidth - 16;
+        var scale = Math.min(1, available / naturalWidth);
+        clone.style.transformOrigin = 'top center';
+        clone.style.transform = 'scale(' + scale + ')';
+        pageWrap.style.height = (clone.offsetHeight * scale) + 'px';
+    }
+    setTimeout(fitScale, 0);
+    window.addEventListener('resize', fitScale);
+    overlay._fitScale = fitScale;
 
-    win.onload = function() {
-        win.focus();
-        win.print();
-        setTimeout(function() { win.close(); }, 1000);
-    };
+    document.getElementById('preview-close-btn').onclick = closeDocumentPreview;
+    document.getElementById('preview-print-btn').onclick = function() { window.print(); };
+}
+
+function closeDocumentPreview() {
+    var overlay = document.getElementById('document-preview-overlay');
+    if (overlay) {
+        if (overlay._fitScale) window.removeEventListener('resize', overlay._fitScale);
+        overlay.remove();
+    }
+    document.body.style.overflow = '';
 }
 </script>
 <script>
