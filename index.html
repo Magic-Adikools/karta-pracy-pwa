@@ -219,6 +219,26 @@
         }
 
         .main-title { text-align: center; font-size: 11pt; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; text-decoration: underline; }
+
+        /* ── EMERYTURA: karta jako zwykły, płynny widget (nie A4), żeby mieściła się na ekranie telefonu ── */
+        #emerytura {
+            display: none;
+            width: 100%;
+            max-width: 480px;
+            min-height: 0;
+            margin: 20px auto;
+            padding: 26px 20px;
+            box-sizing: border-box;
+        }
+        .emerytura-missing { text-align: center; color: #666; padding: 30px 14px; background: #f9f9f9; border-radius: 8px; font-size: 13px; }
+        .emerytura-target-line { text-align: center; font-size: 14px; color: #555; margin-bottom: 22px; }
+        .emerytura-stats-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .emerytura-stat-card { background: #f5f5f5; border-radius: 10px; padding: 18px 14px; text-align: center; flex: 1 1 90px; min-width: 80px; max-width: 130px; box-sizing: border-box; }
+        .emerytura-stat-num { font-size: 30px; font-weight: bold; color: var(--primary-blue); line-height: 1.1; }
+        .emerytura-stat-label { font-size: 11px; color: #666; margin-top: 6px; letter-spacing: 0.3px; }
+        .emerytura-total-line { text-align: center; font-size: 14px; color: #333; margin-top: 20px; }
+        .emerytura-total-num { color: var(--primary-blue); font-size: 17px; }
+        .emerytura-reached-msg { text-align: center; font-size: 14px; color: #28a745; font-weight: bold; margin-top: 12px; }
         .employee-info-row { display: flex; justify-content: space-between; margin-bottom: 2px; padding: 0 20px; }
         .header-input-dotted { border: none; border-bottom: 1px dotted #000; text-align: center; font-size: 10pt; background: transparent; outline: none; }
         .header-labels { display: flex; justify-content: space-between; font-size: 7pt; margin-bottom: 10px; padding: 0 60px; }
@@ -226,7 +246,7 @@
 
         table { width: 100%; border-collapse: collapse; font-size: 7pt; table-layout: fixed; }
         th, td { border: 1px solid var(--border-color); padding: 1px; text-align: center; height: 21px; overflow: hidden; position: relative; }
-        th { overflow: visible; white-space: normal; word-wrap: break-word; word-break: break-all; padding: 2px 1px; font-size: 7pt; }
+        th { overflow: visible; white-space: normal; word-wrap: break-word; overflow-wrap: break-word; word-break: normal; hyphens: none; padding: 2px 1px; font-size: 7pt; line-height: 1.15; }
 
         .sat { background-color: var(--sat-color) !important; }
         .sun { background-color: var(--sun-color) !important; }
@@ -369,8 +389,55 @@
             .grafik-day-hours {
                 font-size: 6px;
             }
+
+            #emerytura {
+                padding: 18px 10px;
+                margin: 10px auto;
+            }
+
+            .emerytura-stats-row {
+                gap: 6px;
+            }
+
+            .emerytura-stat-card {
+                padding: 12px 6px;
+                min-width: 68px;
+                flex: 1 1 68px;
+            }
+
+            .emerytura-stat-num {
+                font-size: 22px;
+            }
+
+            .emerytura-stat-label {
+                font-size: 9px;
+            }
+
+            .emerytura-target-line,
+            .emerytura-total-line {
+                font-size: 12px;
+            }
+
+            .emerytura-total-num {
+                font-size: 15px;
+            }
         }
         .cell-input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-size: 8.5pt; outline: none; }
+        .header-wrap-textarea {
+            display: block;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: none;
+            overflow: hidden;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: break-word;
+            hyphens: none;
+            line-height: 1.15;
+            height: auto;
+            min-height: 14px;
+            padding: 2px 1px;
+        }
         .signature-section { margin-top: 40px; display: flex; justify-content: space-around; font-size: 9pt; }
         .sig-box { border-top: 1px dotted #000; width: 200px; text-align: center; padding-top: 8px; }
 
@@ -832,6 +899,19 @@
             </div>
         </div>
         <div class="settings-row">
+            <h3 style="margin-top:0">🎂 Emerytura</h3>
+            <p style="font-size:12px;color:#666;margin-top:0;">Podaj datę urodzenia oraz swój wiek emerytalny, aby w zakładce "Emerytura" zobaczyć ile lat, miesięcy i dni Ci zostało.</p>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+                <label style="font-size:12px;color:#555;">Data urodzenia</label>
+                <input type="date" autocomplete="off" id="retirement-birthdate" oninput="saveRetirementSettings()" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-size:12px;color:#555;">Twój wiek emerytalny (w latach)</label>
+                <input type="number" autocomplete="off" id="retirement-age" min="40" max="80" step="1" placeholder="np. 60 lub 65" oninput="saveRetirementSettings()" style="padding:8px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+            </div>
+            <p style="font-size:11px;color:#999;margin:10px 0 0 0;">Ustawowy wiek emerytalny w Polsce: kobieta – 60 lat, mężczyzna – 65 lat (bez zmian od 2017 r.). Gdyby przepisy się zmieniły, po prostu zaktualizuj tę wartość ręcznie.</p>
+        </div>
+        <div class="settings-row">
             <h3 style="margin-top:0">Zabezpieczenia</h3>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;background:#f9f9f9;padding:10px;border-radius:5px;">
                 <label for="pin-toggle" style="font-weight:bold;font-size:14px;">Blokada kodu PIN</label>
@@ -974,6 +1054,7 @@
         <button class="tab-btn"        id="tab-urlop"        onclick="switchTab('urlop')">WNIOSEK URLOPOWY</button>
         <button class="tab-btn"        id="tab-oswiadczenie" onclick="switchTab('oswiadczenie')">OŚWIADCZENIE</button>
         <button class="tab-btn"        id="tab-grafik"        onclick="switchTab('grafik')">MÓJ GRAFIK</button>
+        <button class="tab-btn"        id="tab-emerytura"     onclick="switchTab('emerytura')">EMERYTURA ZA...</button>
         <button onclick="changeMonth(-1)">⬅️</button>
         <button onclick="changeMonth(1)">➡️</button>
         <button class="clear-btn" onclick="clearCurrentMonth()">USUŃ</button>
@@ -1223,16 +1304,19 @@
                 <thead>
                     <tr>
                         <th rowspan="2" style="width:5%">Dzień</th>
-                        <th rowspan="2" style="width:14%">Godz. rozpoczęcia pracy</th>
-                        <th rowspan="2" style="width:15%">Godz. zakończenia pracy</th>
-                        <th rowspan="2" style="width:10%">Ilość godz.</th>
-                        <th style="width:11%">Konto ogólne produkcja</th>
-                        <th style="width:14%"></th>
-                        <th style="width:14%"></th>
-                        <th style="width:14%"></th>
-                        <th style="width:14%"></th>
+                        <th rowspan="2" style="width:12%">Godz. rozpoczęcia pracy</th>
+                        <th rowspan="2" style="width:12%">Godz. zakończenia pracy</th>
+                        <th rowspan="2" style="width:8%">Ilość godz.</th>
+                        <th style="width:9%">Linia zgrzewania</th>
+                        <th style="width:10%">Magazyn wyrobów Hutniczych</th>
+                        <th style="width:6%">Linia cięcia</th>
+                        <th style="width:10%">Linia cięcia i otworowania</th>
+                        <th style="width:8%">Magazyn surowców</th>
+                        <th style="width:6%">Koszty Zarządu</th>
+                        <th style="width:6%">Koszty wagonów</th>
+                        <th style="width:8%">Koszty sprzedaży wyrobów gotowych</th>
                     </tr>
-                    <tr><th>10120</th><th></th><th></th><th></th><th></th></tr>
+                    <tr><th>10121</th><th>12311</th><th>10131</th><th>10132</th><th>11901</th><th>18111</th><th>13222</th><th>12111</th></tr>
                 </thead>
                 <tbody id="body-inne"></tbody>
                 <tfoot>
@@ -1241,7 +1325,8 @@
                         <td id="inne-total" class="data-text" style="font-weight:bold;"></td>
                         <td id="inne-s1" class="data-text"></td><td id="inne-s2" class="data-text"></td>
                         <td id="inne-s3" class="data-text"></td><td id="inne-s4" class="data-text"></td>
-                        <td id="inne-s5" class="data-text"></td>
+                        <td id="inne-s5" class="data-text"></td><td id="inne-s6" class="data-text"></td>
+                        <td id="inne-s7" class="data-text"></td><td id="inne-s8" class="data-text"></td>
                     </tr>
                     <tr style="text-align:left;">
                         <td colspan="4" style="padding-left:10px;">Udział procentowy</td>
@@ -1250,6 +1335,9 @@
                         <td id="inne-p3" class="data-text" style="font-size:6pt;"></td>
                         <td id="inne-p4" class="data-text" style="font-size:6pt;"></td>
                         <td id="inne-p5" class="data-text" style="font-size:6pt;"></td>
+                        <td id="inne-p6" class="data-text" style="font-size:6pt;"></td>
+                        <td id="inne-p7" class="data-text" style="font-size:6pt;"></td>
+                        <td id="inne-p8" class="data-text" style="font-size:6pt;"></td>
                     </tr>
                 </tfoot>
             </table>
@@ -1442,20 +1530,20 @@
                 <thead>
                     <tr>
                         <th rowspan="2" style="width:5%">Dzień</th>
-                        <th rowspan="2" style="width:15%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th rowspan="2" style="width:15%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h1" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th rowspan="2" style="width:11%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h2" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h3" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h4" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h5" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th style="width:14%"><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-h6" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th rowspan="2" style="width:15%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h0" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th rowspan="2" style="width:15%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h1" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th rowspan="2" style="width:11%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h2" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th style="width:14%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h3" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th style="width:14%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h4" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th style="width:14%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h5" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th style="width:14%"><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-h6" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
                     </tr>
                     <tr>
-                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s0" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s1h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s2h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s3h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
-                        <th><input type="text" autocomplete="off" class="cell-input data-field" id="edycja-s4h" oninput="saveEdycjaHeaders()" style="font-weight:bold;font-size:7pt;"></th>
+                        <th><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-s0" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-s1h" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-s2h" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-s3h" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
+                        <th><textarea rows="1" autocomplete="off" class="cell-input data-field header-wrap-textarea" id="edycja-s4h" oninput="saveEdycjaHeaders(); autoSizeEdycjaHeader(this);" style="font-weight:bold;font-size:7pt;"></textarea></th>
                     </tr>
                 </thead>
                 <tbody id="body-edycja"></tbody>
@@ -1480,6 +1568,39 @@
             <div class="signature-section">
                 <div class="sig-box">Podpis pracownika</div>
                 <div class="sig-box">Podpis przełożonego</div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════ EMERYTURA ══ -->
+        <div id="emerytura" class="page">
+            <div class="main-title">Emerytura za...</div>
+
+            <div id="emerytura-missing" class="emerytura-missing" style="display:none;">
+                Aby zobaczyć licznik, uzupełnij w ⚙️ Ustawieniach → sekcja "🎂 Emerytura" swoją datę urodzenia oraz wiek emerytalny.
+            </div>
+
+            <div id="emerytura-content" style="display:none;">
+                <div class="emerytura-target-line">
+                    Wiek emerytalny osiągniesz: <strong id="emerytura-target-date"></strong>
+                </div>
+                <div class="emerytura-stats-row">
+                    <div class="emerytura-stat-card">
+                        <div id="emerytura-years" class="emerytura-stat-num">0</div>
+                        <div class="emerytura-stat-label">LAT</div>
+                    </div>
+                    <div class="emerytura-stat-card">
+                        <div id="emerytura-months" class="emerytura-stat-num">0</div>
+                        <div class="emerytura-stat-label">MIESIĘCY</div>
+                    </div>
+                    <div class="emerytura-stat-card">
+                        <div id="emerytura-days" class="emerytura-stat-num">0</div>
+                        <div class="emerytura-stat-label">DNI</div>
+                    </div>
+                </div>
+                <div class="emerytura-total-line">
+                    Ilość dni do emerytury: <strong id="emerytura-total-days" class="emerytura-total-num"></strong>
+                </div>
+                <div id="emerytura-reached-msg" class="emerytura-reached-msg"></div>
             </div>
         </div>
 
@@ -1525,10 +1646,10 @@ const ROLES = {
     },
     'Inne': {
         prefix:'data_inne', bodyId:'body-inne', cardId:'karta-inne',
-        colCount:8, extraSums:[],
+        colCount:11, extraSums:[],
         totalId:'inne-total',
-        sumIds: ['inne-s1','inne-s2','inne-s3','inne-s4','inne-s5'],
-        percIds:['inne-p1','inne-p2','inne-p3','inne-p4','inne-p5'],
+        sumIds: ['inne-s1','inne-s2','inne-s3','inne-s4','inne-s5','inne-s6','inne-s7','inne-s8'],
+        percIds:['inne-p1','inne-p2','inne-p3','inne-p4','inne-p5','inne-p6','inne-p7','inne-p8'],
         mId:'inne-m', yId:'inne-y', idFld:'inne-id', nameFld:'inne-name'
     },
     'Edycja': {
@@ -1809,7 +1930,7 @@ function goToRoles() {
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
-    ['karta-pracy','karta-op','karta-del','karta-aut','karta-inne','karta-edycja','wniosek-urlopowy','oswiadczenie','moj-grafik']
+    ['karta-pracy','karta-op','karta-del','karta-aut','karta-inne','karta-edycja','wniosek-urlopowy','oswiadczenie','moj-grafik','emerytura']
         .forEach(id => document.getElementById(id).style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
@@ -1827,6 +1948,10 @@ function switchTab(tab) {
         document.getElementById('moj-grafik').style.display = 'block';
         document.getElementById('tab-grafik').classList.add('active');
         renderGrafik();
+    } else if (tab === 'emerytura') {
+        document.getElementById('emerytura').style.display = 'block';
+        document.getElementById('tab-emerytura').classList.add('active');
+        renderRetirement();
     }
 }
 
@@ -1988,11 +2113,18 @@ function saveEdycjaHeaders() {
     localStorage.setItem('edycja_headers', JSON.stringify(data));
 }
 
+function autoSizeEdycjaHeader(el) {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+
 function loadEdycjaHeaders() {
     const saved = JSON.parse(localStorage.getItem('edycja_headers') || '{}');
     EDYCJA_HEADER_IDS.forEach(id => {
         const el = document.getElementById(id);
         if (el && saved[id] !== undefined) el.value = saved[id];
+        autoSizeEdycjaHeader(el);
     });
 }
 
@@ -2004,6 +2136,7 @@ function init() {
     loadQuickTimes();
     applyQuickLabels();
     loadGrafikSettings();
+    loadRetirementSettings();
     setVacCount(parseInt(localStorage.getItem('vac_count') || '1'));
     const savedName = localStorage.getItem('global_name') || "";
     const savedId   = localStorage.getItem('global_id')   || "";
@@ -2405,27 +2538,126 @@ function renderGrafik() {
     document.getElementById('grafik-total').innerText = formatNumber(totalHours) + ' godz.';
 }
 
+// ── EMERYTURA ─────────────────────────────────────────────────────────────────
+function saveRetirementSettings() {
+    const birth = document.getElementById('retirement-birthdate').value;
+    const age   = document.getElementById('retirement-age').value;
+    localStorage.setItem('retirement_birthdate', birth);
+    localStorage.setItem('retirement_age', age);
+    if (document.getElementById('emerytura').style.display !== 'none') renderRetirement();
+}
+
+function loadRetirementSettings() {
+    const birth = localStorage.getItem('retirement_birthdate') || '';
+    const age   = localStorage.getItem('retirement_age') || '';
+    document.getElementById('retirement-birthdate').value = birth;
+    document.getElementById('retirement-age').value       = age;
+}
+
+// Różnica kalendarzowa (lata / miesiące / dni) między dwiema datami — 'to' musi być >= 'from'
+function diffYMD(from, to) {
+    let y = to.getFullYear()  - from.getFullYear();
+    let m = to.getMonth()     - from.getMonth();
+    let d = to.getDate()      - from.getDate();
+    if (d < 0) {
+        m -= 1;
+        d += new Date(to.getFullYear(), to.getMonth(), 0).getDate(); // dni w miesiącu poprzedzającym 'to'
+    }
+    if (m < 0) { y -= 1; m += 12; }
+    return { years: y, months: m, days: d };
+}
+
+function renderRetirement() {
+    const birthStr = localStorage.getItem('retirement_birthdate') || '';
+    const ageVal   = parseFloat(localStorage.getItem('retirement_age') || '');
+    const missing  = document.getElementById('emerytura-missing');
+    const content  = document.getElementById('emerytura-content');
+
+    if (!birthStr || !ageVal || isNaN(ageVal)) {
+        missing.style.display = 'block';
+        content.style.display = 'none';
+        return;
+    }
+    missing.style.display = 'none';
+    content.style.display = 'block';
+
+    const [by, bm, bd] = birthStr.split('-').map(Number);
+    const birthDate    = new Date(by, bm - 1, bd);
+    const targetDate   = new Date(by + Math.floor(ageVal), bm - 1, bd);
+    // Obsługa niecałkowitego wieku emerytalnego (np. 60.5) — dolicz dodatkowe miesiące
+    const fractionMonths = Math.round((ageVal - Math.floor(ageVal)) * 12);
+    if (fractionMonths) targetDate.setMonth(targetDate.getMonth() + fractionMonths);
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    targetDate.setHours(0,0,0,0);
+
+    document.getElementById('emerytura-target-date').innerText =
+        pad(targetDate.getDate()) + '.' + pad(targetDate.getMonth()+1) + '.' + targetDate.getFullYear();
+
+    const reachedMsg = document.getElementById('emerytura-reached-msg');
+    const totalDaysEl = document.getElementById('emerytura-total-days');
+    if (targetDate <= today) {
+        document.getElementById('emerytura-years').innerText  = '0';
+        document.getElementById('emerytura-months').innerText = '0';
+        document.getElementById('emerytura-days').innerText   = '0';
+        totalDaysEl.innerText = '0';
+        reachedMsg.innerText = '🎉 Wiek emerytalny został już osiągnięty!';
+    } else {
+        const diff = diffYMD(today, targetDate);
+        document.getElementById('emerytura-years').innerText  = diff.years;
+        document.getElementById('emerytura-months').innerText = diff.months;
+        document.getElementById('emerytura-days').innerText   = diff.days;
+        const totalDays = Math.round((targetDate - today) / 86400000);
+        totalDaysEl.innerText = totalDays.toLocaleString('pl-PL');
+        reachedMsg.innerText = '';
+    }
+}
+
 // ── TOTALS ────────────────────────────────────────────────────────────────────
+// Parsuje wartość komórki w formacie "8", "8+(16)", "10,5+(14)" itp.
+// Zwraca { main, bracket } — liczbę główną i liczbę w nawiasie (0 jeśli brak).
+function parseHoursValue(str) {
+    if (!str) return { main: 0, bracket: 0 };
+    const m = String(str).trim().match(/^(-?\d+(?:[.,]\d+)?)\s*(?:\+\s*\(\s*(-?\d+(?:[.,]\d+)?)\s*\))?/);
+    if (!m) return { main: 0, bracket: 0 };
+    const main    = parseFloat(m[1].replace(',', '.')) || 0;
+    const bracket = m[2] ? (parseFloat(m[2].replace(',', '.')) || 0) : 0;
+    return { main, bracket };
+}
+
+// Formatuje sumę z powrotem do postaci "18" albo "18+(30)"
+function formatHoursTotal(main, bracket) {
+    return bracket !== 0 ? formatNumber(main) + '+(' + formatNumber(bracket) + ')' : formatNumber(main);
+}
+
 function calcTotals(role) {
     const cfg     = ROLES[role];
     const rows    = document.getElementById(cfg.bodyId).rows;
     const cOffset = 3 + cfg.extraSums.length;
-    let   total   = 0;
+    let   total   = 0, totalBr = 0;
     const extra   = cfg.extraSums.map(() => 0);
+    const extraBr = cfg.extraSums.map(() => 0);
     const sums    = Array(cfg.sumIds.length).fill(0);
+    const sumsBr  = Array(cfg.sumIds.length).fill(0);
 
     for (let i = 0; i < rows.length; i++) {
         const inp = rows[i].querySelectorAll('input');
-        total += parseFloat(inp[2].value) || 0;
-        cfg.extraSums.forEach((ex, ei) => { extra[ei] += parseFloat(inp[ex.col].value) || 0; });
+        const t = parseHoursValue(inp[2].value);
+        total += t.main; totalBr += t.bracket;
+        cfg.extraSums.forEach((ex, ei) => {
+            const v = parseHoursValue(inp[ex.col].value);
+            extra[ei] += v.main; extraBr[ei] += v.bracket;
+        });
         for (let c = 0; c < sums.length; c++) {
-            sums[c] += parseFloat(inp[cOffset + c].value) || 0;
+            const v = parseHoursValue(inp[cOffset + c].value);
+            sums[c] += v.main; sumsBr[c] += v.bracket;
         }
     }
 
-    document.getElementById(cfg.totalId).innerText = formatNumber(total);
-    cfg.extraSums.forEach((ex, ei) => { document.getElementById(ex.id).innerText = formatNumber(extra[ei]); });
-    cfg.sumIds.forEach((id, i)  => { document.getElementById(id).innerText = formatNumber(sums[i]); });
+    document.getElementById(cfg.totalId).innerText = formatHoursTotal(total, totalBr);
+    cfg.extraSums.forEach((ex, ei) => { document.getElementById(ex.id).innerText = formatHoursTotal(extra[ei], extraBr[ei]); });
+    cfg.sumIds.forEach((id, i)  => { document.getElementById(id).innerText = formatHoursTotal(sums[i], sumsBr[i]); });
     cfg.percIds.forEach((id, i) => {
         document.getElementById(id).innerText = total > 0 ? ((sums[i]/total)*100).toFixed(1)+"%" : "";
     });
